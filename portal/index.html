@@ -208,6 +208,23 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
 .camwrap .dica{position:absolute;left:12px;right:12px;bottom:12px;text-align:center;
   font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6);}
 
+.peca{width:100%;border-radius:var(--radius);display:block;
+  box-shadow:var(--shadow-md);background:var(--cream);}
+.formatos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.fmt{border:1.5px solid var(--sand-line);background:var(--ivory);border-radius:var(--radius-sm);
+  padding:11px 8px;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:700;
+  color:var(--stone);transition:all .2s var(--ease);}
+.fmt.on{border-color:var(--blue);color:var(--ink);box-shadow:0 0 0 3px rgba(11,123,214,.10);}
+.fmt small{display:block;font-weight:600;font-size:10.5px;color:var(--stone-lt);margin-top:2px;}
+
+.passo{display:flex;gap:11px;align-items:flex-start;padding:11px 0;}
+.passo b{flex:none;width:21px;height:21px;border-radius:50%;background:var(--ink);color:#fff;
+  font-size:11px;font-weight:800;display:grid;place-items:center;margin-top:1px;}
+.passo div{font-size:13.5px;color:var(--stone);line-height:1.45;}
+
+.legenda{background:var(--cream);border:1px dashed #C6D5E4;border-radius:var(--radius-sm);
+  padding:14px;font-size:12.5px;line-height:1.55;color:var(--stone);white-space:pre-wrap;}
+
 .screen{display:none;padding-bottom:104px;}
 .screen.is-active{display:block;animation:in .38s var(--ease) both;}
 @keyframes in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
@@ -434,6 +451,20 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
           <div style="margin-top:14px;"><button class="btn btn--blue" id="btnFoto">Tirar a foto de hoje</button></div>
         </div>
 
+        <div class="card" id="fotShare" style="margin-top:14px;display:none;">
+          <div class="between">
+            <div>
+              <p class="label">Mostrar</p>
+              <h3 style="margin-top:5px;">Sua comparação vira post</h3>
+              <p class="fine" style="margin-top:4px;">Peça pronta, com a marcação já dentro</p>
+            </div>
+            <div class="item-img" style="font-size:22px;">✨</div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn--solid" data-ir="compartilhar">Preparar meu post</button>
+          </div>
+        </div>
+
         <div class="card card--ink" style="margin-top:14px;">
           <p class="label">Onde a foto fica</p>
           <h3 style="margin-top:7px;color:var(--ivory);">Ela não sai daqui.</h3>
@@ -444,6 +475,67 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
           </p>
         </div>
         <div style="height:10px;"></div>
+      </div>
+    </section>
+
+    <!-- COMPARTILHAR -->
+    <section class="screen" id="s-compartilhar">
+      <header class="topbar"><div class="between">
+        <button class="copybtn" style="background:transparent;color:var(--ink);padding:0;" data-ir="progresso">← Voltar</button>
+        <span class="tier"><i></i>Pronto para postar</span>
+      </div></header>
+      <div class="pad" style="padding-top:20px;">
+
+        <div class="formatos">
+          <button class="fmt on" data-fmt="story">Stories<small>e o link vai junto</small></button>
+          <button class="fmt"    data-fmt="feed">Feed<small>fica no seu perfil</small></button>
+        </div>
+
+        <div id="pecaBox" style="position:relative;">
+          <img class="peca" id="pecaImg" alt="Prévia do seu post">
+          <div id="pecaCarregando" style="position:absolute;inset:0;display:grid;place-items:center;">
+            <div class="spin"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <button class="btn btn--blue" id="btnCompartilhar">Compartilhar no Instagram</button>
+        </div>
+        <p class="fine" style="margin-top:9px;text-align:center;">
+          A legenda vai junto, copiada. É só colar.
+        </p>
+
+        <hr class="rule">
+
+        <p class="label">O que acontece quando você toca</p>
+        <div style="margin-top:8px;">
+          <div class="passo"><b>1</b><div>Abre a lista de aplicativos do seu celular. Escolha o Instagram.</div></div>
+          <div class="passo"><b>2</b><div>Cole a legenda, que já está copiada. Ela marca a <span id="pmHandle">@divessencebeauty</span>.</div></div>
+          <div class="passo" id="passo3"><b>3</b><div>Nos stories, adicione a etiqueta de link com o seu endereço. É o que faz a indicação contar.</div></div>
+        </div>
+
+        <hr class="rule">
+
+        <div class="between" style="margin-bottom:10px;">
+          <p class="label">Sua legenda</p>
+          <button class="copybtn" id="btnLegenda">Copiar</button>
+        </div>
+        <div class="legenda" id="legendaTxt">—</div>
+        <p class="fine" style="margin-top:9px;">
+          A marcação de publicidade está na legenda porque você recebe crédito por indicar.
+          É exigência do CONAR e protege você.
+        </p>
+
+        <div class="card card--ink" style="margin-top:18px;">
+          <p class="label">Antes de tocar</p>
+          <h3 style="margin-top:7px;color:var(--ivory);">A peça é montada aqui.</h3>
+          <p class="lede" style="margin-top:9px;">
+            Suas fotos não saem deste aparelho para a gente em momento nenhum. Quem decide
+            publicar é você, e o que sai vai direto do seu celular para o Instagram.
+          </p>
+        </div>
+        <div style="height:10px;"></div>
+        <canvas id="canvasPeca" style="display:none;"></canvas>
       </div>
     </section>
 
@@ -785,7 +877,8 @@ document.addEventListener('click', async function(e){
     var destino = t.getAttribute('data-ir');
     if (destino !== 'camera') fecharCamera();
     ir(destino);
-    if (destino === 'progresso') await pintarProgresso();
+    if (destino === 'progresso')    await pintarProgresso();
+    if (destino === 'compartilhar') await prepararPeca();
     return;
   }
 
@@ -974,6 +1067,7 @@ async function pintarProgresso(){
 
   document.getElementById('fotVazio').style.display    = comFoto.length ? 'none' : 'block';
   document.getElementById('fotCompara').style.display  = temPar ? 'block' : 'none';
+  document.getElementById('fotShare').style.display    = temPar ? 'block' : 'none';
 
   if (temPar){
     var a = comFoto[0], z = comFoto[comFoto.length - 1];
@@ -1093,6 +1187,238 @@ document.getElementById('fotoArquivo').addEventListener('change', function(e){
 
 document.getElementById('btnFoto').addEventListener('click', function(){ abrirCamera(diaAlvo); });
 
+
+/* ============================================================
+   INSTAGRAM — a peca e montada aqui, no aparelho, com as fotos locais.
+   A marcacao da marca vai impressa na imagem e escrita na legenda.
+   ============================================================ */
+var marca = { instagram:'divessencebeauty', site:'divessencebeauty.com.br', clube:'Clube Divessence' };
+var formatoAtual = 'story';
+var pecaBlob = null;
+
+var TAM = {
+  story: { w:1080, h:1920 },
+  feed:  { w:1080, h:1350 }
+};
+
+function esp(ctx, px){ try{ ctx.letterSpacing = px + 'px'; }catch(e){} }
+
+function textoCentrado(ctx, txt, y, fonte, cor, espaco){
+  ctx.save();
+  ctx.font = fonte; ctx.fillStyle = cor;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  esp(ctx, espaco || 0);
+  ctx.fillText(txt, ctx.canvas.width / 2, y);
+  ctx.restore();
+}
+
+function caixaArredondada(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+  else {
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  }
+  ctx.closePath();
+}
+
+/* corta a foto no centro, no formato da moldura */
+function desenharFoto(ctx, img, x, y, w, h, r){
+  ctx.save(); caixaArredondada(ctx, x, y, w, h, r); ctx.clip();
+  var escala = Math.max(w / img.width, h / img.height);
+  var lw = img.width * escala, lh = img.height * escala;
+  ctx.drawImage(img, x + (w - lw) / 2, y + (h - lh) / 2, lw, lh);
+  ctx.restore();
+}
+
+function carregarImagem(blob){
+  return new Promise(function(ok, falha){
+    var img = new Image(), u = URL.createObjectURL(blob);
+    img.onload  = function(){ URL.revokeObjectURL(u); ok(img); };
+    img.onerror = function(){ URL.revokeObjectURL(u); falha(new Error('imagem')); };
+    img.src = u;
+  });
+}
+
+async function montarPeca(formato){
+  var feitas = (dados.fotos && dados.fotos.feitas) || [];
+  if (feitas.length < 2) return null;
+
+  var a = feitas[0], z = feitas[feitas.length - 1];
+  var ba = await lerFoto(a), bz = await lerFoto(z);
+  if (!ba || !bz) return null;
+
+  var ia = await carregarImagem(ba), iz = await carregarImagem(bz);
+  try { await document.fonts.ready; } catch(e){}
+
+  var T = TAM[formato] || TAM.story;
+  var c = document.getElementById('canvasPeca');
+  c.width = T.w; c.height = T.h;
+  var ctx = c.getContext('2d');
+
+  /* fundo claro da marca, com um respiro azul no alto */
+  var g = ctx.createLinearGradient(0, 0, 0, T.h);
+  g.addColorStop(0, '#FBFDFF'); g.addColorStop(1, '#E4EDF6');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, T.w, T.h);
+  var halo = ctx.createRadialGradient(T.w*0.5, T.h*0.10, 0, T.w*0.5, T.h*0.10, T.w*0.75);
+  halo.addColorStop(0, 'rgba(11,123,214,.13)'); halo.addColorStop(1, 'rgba(11,123,214,0)');
+  ctx.fillStyle = halo; ctx.fillRect(0, 0, T.w, T.h);
+
+  var alto = (formato === 'story');
+  var topo = alto ? 200 : 120;
+
+  textoCentrado(ctx, 'DIVESSENCE', topo, '600 46px Fraunces, Georgia, serif', '#0B0D10', 11);
+  textoCentrado(ctx, 'SÉRUM GHK-Cu', topo + 44,
+                '800 19px Manrope, Arial, sans-serif', '#8A96A1', 6);
+
+  var dias = z - a;
+  textoCentrado(ctx, dias + ' dias.', topo + (alto ? 168 : 132),
+                '400 96px Fraunces, Georgia, serif', '#0B0D10', -1);
+  textoCentrado(ctx, 'Mesma luz, mesmo ângulo, sem filtro.', topo + (alto ? 224 : 184),
+                '600 25px Manrope, Arial, sans-serif', '#545E68', 0);
+
+  /* as duas fotos */
+  var marg = 80, gap = 22;
+  var lw = (T.w - marg*2 - gap) / 2;
+  var lh = Math.round(lw * 4 / 3);
+  var fy = topo + (alto ? 300 : 246);
+
+  ctx.save(); ctx.shadowColor = 'rgba(11,13,16,.16)'; ctx.shadowBlur = 34; ctx.shadowOffsetY = 12;
+  desenharFoto(ctx, ia, marg, fy, lw, lh, 26);
+  desenharFoto(ctx, iz, marg + lw + gap, fy, lw, lh, 26);
+  ctx.restore();
+
+  /* etiquetas por baixo de cada foto */
+  function etiqueta(txt, cx, y, destaque){
+    ctx.save();
+    ctx.font = '800 21px Manrope, Arial, sans-serif'; esp(ctx, 4);
+    var larg = ctx.measureText(txt).width + 44;
+    ctx.fillStyle = destaque ? '#0B7BD6' : '#FFFFFF';
+    caixaArredondada(ctx, cx - larg/2, y - 30, larg, 46, 23); ctx.fill();
+    if (!destaque){ ctx.strokeStyle = '#DCE6F0'; ctx.lineWidth = 2; ctx.stroke(); }
+    ctx.fillStyle = destaque ? '#FFFFFF' : '#545E68';
+    ctx.textAlign = 'center'; ctx.fillText(txt, cx, y);
+    ctx.restore();
+  }
+  var ey = fy + lh + 52;
+  etiqueta('DIA ' + a, marg + lw/2, ey, false);
+  etiqueta('DIA ' + z, marg + lw + gap + lw/2, ey, true);
+
+  /* rodape: a marcacao vai impressa, para sobreviver a qualquer recorte */
+  var ry = alto ? T.h - 250 : T.h - 150;
+  ctx.save();
+  ctx.strokeStyle = '#CBD9E6'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(T.w*0.28, ry - 70); ctx.lineTo(T.w*0.72, ry - 70); ctx.stroke();
+  ctx.restore();
+
+  textoCentrado(ctx, '@' + marca.instagram, ry,
+                '700 40px Manrope, Arial, sans-serif', '#0B7BD6', 1);
+
+  var cod = dados.membro && dados.membro.codigo;
+  if (cod){
+    textoCentrado(ctx, marca.site + '/' + cod, ry + 46,
+                  '600 24px Manrope, Arial, sans-serif', '#8A96A1', 1);
+  }
+
+  return new Promise(function(ok){ c.toBlob(function(b){ ok(b); }, 'image/jpeg', 0.92); });
+}
+
+function montarLegenda(){
+  var feitas = (dados.fotos && dados.fotos.feitas) || [];
+  if (feitas.length < 2) return '';
+  var a = feitas[0], z = feitas[feitas.length - 1];
+  var cred = dados.indicacoes && Number(dados.indicacoes.credito_reais).toFixed(0);
+  var link = dados.indicacoes && dados.indicacoes.link;
+
+  return 'Dia ' + a + ' e dia ' + z + ' usando o sérum de GHK-Cu da @' + marca.instagram + '.\n' +
+         'Mesma luz, mesmo ângulo, sem filtro. Demora, e é por isso que funciona.\n\n' +
+         'Se quiser testar, o link é ' + link + ' e dá R$ ' + cred + ' na sua primeira compra.\n\n' +
+         '#publi #skincare #ghkcu #peptideodecobre';
+}
+
+async function prepararPeca(){
+  document.getElementById('pecaCarregando').style.display = 'grid';
+  document.getElementById('btnCompartilhar').disabled = true;
+
+  document.getElementById('pmHandle').textContent = '@' + marca.instagram;
+  document.getElementById('passo3').style.display = (formatoAtual === 'story') ? 'flex' : 'none';
+  document.getElementById('legendaTxt').textContent = montarLegenda();
+
+  pecaBlob = await montarPeca(formatoAtual);
+  if (pecaBlob){
+    var img = document.getElementById('pecaImg');
+    if (img.dataset.url) { try{ URL.revokeObjectURL(img.dataset.url); }catch(e){} }
+    var u = URL.createObjectURL(pecaBlob);
+    img.dataset.url = u; img.src = u;
+    document.getElementById('btnCompartilhar').disabled = false;
+  }
+  document.getElementById('pecaCarregando').style.display = 'none';
+}
+
+async function copiarLegenda(){
+  try{ await navigator.clipboard.writeText(montarLegenda()); return true; }
+  catch(e){ return false; }
+}
+
+document.querySelectorAll('.fmt').forEach(function(b){
+  b.addEventListener('click', async function(){
+    document.querySelectorAll('.fmt').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    formatoAtual = b.getAttribute('data-fmt');
+    await prepararPeca();
+  });
+});
+
+document.getElementById('btnLegenda').addEventListener('click', async function(){
+  var b = this;
+  var ok = await copiarLegenda();
+  b.textContent = ok ? 'Copiada' : 'Selecione e copie';
+  if (ok) b.classList.add('ok');
+  setTimeout(function(){ b.textContent = 'Copiar'; b.classList.remove('ok'); }, 2000);
+});
+
+/* O compartilhamento precisa sair do toque dela: a peca ja esta pronta antes. */
+document.getElementById('btnCompartilhar').addEventListener('click', async function(){
+  if (!pecaBlob) return;
+  var arquivo = new File([pecaBlob], 'divessence-' + formatoAtual + '.jpg', { type:'image/jpeg' });
+
+  copiarLegenda();
+
+  try{
+    if (navigator.canShare && navigator.canShare({ files:[arquivo] })){
+      await navigator.share({ files:[arquivo] });
+      await premiarPrimeiroPost();
+      aviso('Legenda copiada. É só colar no Instagram.');
+      return;
+    }
+  } catch(e){
+    if (e && e.name === 'AbortError') return;   /* ela desistiu, tudo bem */
+  }
+
+  /* sem bandeja do sistema: baixa a imagem */
+  var u = URL.createObjectURL(pecaBlob);
+  var a = document.createElement('a');
+  a.href = u; a.download = arquivo.name; document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(u); }, 4000);
+  await premiarPrimeiroPost();
+  aviso('Imagem salva e legenda copiada. Abra o Instagram.');
+});
+
+/* Ponto so na primeira vez. Nunca por post, nunca por alcance. */
+async function premiarPrimeiroPost(){
+  try{
+    var r = await rpc('clube_concluir_missao', { p_chave:'instagram' });
+    if (r && r.ok && !r.ja_tinha_feito){
+      dados = await rpc('clube_me');
+      pintar(dados);
+      setTimeout(function(){ aviso('Mais ' + r.pontos + ' pontos por mostrar seu progresso.'); }, 3600);
+    }
+  } catch(e){}
+}
+
 /* ---------- Início ---------- */
 async function carregar(){
   try{
@@ -1104,6 +1430,7 @@ async function carregar(){
     if (!d || d.erro){ limpar(); ir('login'); return; }
     pintar(d);
     carregarRotina();
+    try { var m = await rpc('clube_marca'); if (m && m.instagram) marca = m; } catch(e){}
     await pintarProgresso();
     ir('inicio');
   } catch(err){ limpar(); ir('login'); }
