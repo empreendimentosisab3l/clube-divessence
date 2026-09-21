@@ -202,28 +202,27 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
 
         <h1 style="margin-top:34px;">Entre com o<br>seu e-mail.</h1>
         <p class="lede" style="margin-top:14px;max-width:280px;margin-left:auto;margin-right:auto;">
-          O mesmo que você usou na compra. Mandamos um link, sem senha para inventar
-          nem lembrar.
+          O mesmo que você usou na compra. Mandamos um código de seis dígitos,
+          sem senha para inventar nem lembrar.
         </p>
 
         <div id="loginForm" style="margin-top:28px;">
           <input class="input" id="email" type="email" inputmode="email"
                  autocomplete="email" placeholder="seu@email.com" aria-label="Seu e-mail">
           <div style="margin-top:12px;">
-            <button class="btn btn--solid" id="btnEnviar">Receber meu link</button>
+            <button class="btn btn--solid" id="btnEnviar">Receber meu código</button>
           </div>
         </div>
 
         <div id="loginCode" style="margin-top:28px;display:none;">
           <p class="lede" style="margin-bottom:14px;">
-            Enviado. Abra o link do e-mail, ou digite aqui o código de seis dígitos,
-            se ele tiver vindo.
+            Enviado. Digite abaixo o código de seis dígitos. Ele vale por dez minutos.
           </p>
           <input class="input" id="code" type="text" inputmode="numeric" maxlength="6"
                  placeholder="000000" style="text-align:center;letter-spacing:.4em;font-weight:700;"
                  aria-label="Código de seis dígitos">
           <div style="margin-top:12px;">
-            <button class="btn btn--blue" id="btnCodigo">Entrar com o código</button>
+            <button class="btn btn--blue" id="btnCodigo">Entrar</button>
           </div>
           <div style="margin-top:10px;">
             <button class="btn btn--ghost btn--sm" id="btnVoltar">Usar outro e-mail</button>
@@ -439,25 +438,15 @@ function limpar(){ sessao = null; try{ localStorage.removeItem(SESS); }catch(e){
 function api(caminho, opcoes){
   opcoes = opcoes || {};
   var h = { 'apikey': KEY, 'Content-Type': 'application/json' };
-  if (sessao && sessao.access_token) h['Authorization'] = 'Bearer ' + sessao.access_token;
+  /* A identidade e o nosso token, no cabecalho: nunca no corpo nem na URL. */
+  if (sessao && sessao.token) h['x-clube-token'] = sessao.token;
   if (opcoes.headers) for (var k in opcoes.headers) h[k] = opcoes.headers[k];
   return fetch(SB + caminho, { method: opcoes.method || 'GET', headers: h, body: opcoes.body });
 }
 
-async function renovar(){
-  if (!sessao || !sessao.refresh_token) return false;
-  var r = await api('/auth/v1/token?grant_type=refresh_token', {
-    method:'POST', body: JSON.stringify({ refresh_token: sessao.refresh_token }) });
-  if (!r.ok) return false;
-  guardar(await r.json());
-  return true;
-}
-
 async function rpc(nome, args){
-  var chamar = function(){ return api('/rest/v1/rpc/' + nome, {
-    method:'POST', body: JSON.stringify(args || {}) }); };
-  var r = await chamar();
-  if (r.status === 401 && await renovar()) r = await chamar();
+  var r = await api('/rest/v1/rpc/' + nome, {
+    method:'POST', body: JSON.stringify(args || {}) });
   if (!r.ok) throw new Error('rpc ' + nome + ' ' + r.status);
   return r.json();
 }
@@ -498,13 +487,24 @@ document.getElementById('btnEnviar').addEventListener('click', async function(){
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { elMsg.textContent = 'Confira o e-mail.'; return; }
   ocupado(true); elMsg.textContent = '';
   try{
-    var r = await api('/auth/v1/otp', { method:'POST',
-      body: JSON.stringify({ email: email, create_user: true,
-                             options: { email_redirect_to: location.origin + location.pathname } }) });
-    if (!r.ok) throw new Error(await r.text());
+    var res = await rpc('clube_pedir_codigo', { p_email: email });
+    if (res && res.erro === 'espere_um_minuto'){
+      elMsg.textContent = 'Já mandei um agora há pouco. Espere um minuto.'; return;
+    }
+    if (res && res.erro === 'muitas_tentativas'){
+      elMsg.textContent = 'Muitos pedidos seguidos. Tente daqui a uma hora.'; return;
+    }
+    if (res && res.erro){ elMsg.textContent = 'Confira o e-mail.'; return; }
+
     document.getElementById('loginForm').style.display = 'none';
     document.getElementById('loginCode').style.display = 'block';
     elMsg.textContent = 'Enviado para ' + email;
+
+    /* Só existe enquanto o clube estiver em teste, e só para um e-mail. */
+    if (res && res.dev_codigo){
+      document.getElementById('code').value = res.dev_codigo;
+      elMsg.textContent = 'Modo de teste: código preenchido.';
+    }
   } catch(e){
     elMsg.textContent = 'Não consegui enviar agora. Tente de novo em um minuto.';
   } finally { ocupado(false); }
@@ -516,13 +516,21 @@ document.getElementById('btnCodigo').addEventListener('click', async function(){
   if (code.length < 6) { elMsg.textContent = 'O código tem seis dígitos.'; return; }
   ocupado(true); elMsg.textContent = '';
   try{
-    var r = await api('/auth/v1/verify', { method:'POST',
-      body: JSON.stringify({ email: email, token: code, type: 'email' }) });
-    if (!r.ok) throw new Error(await r.text());
-    guardar(await r.json());
+    var res = await rpc('clube_entrar', { p_email: email, p_codigo: code });
+    if (res && res.erro === 'codigo_errado'){
+      elMsg.textContent = 'Código não confere. Restam ' + res.restam + '.'; return;
+    }
+    if (res && res.erro === 'nao_e_membro'){
+      document.getElementById('naoEmail').textContent = res.email || email;
+      ir('nao'); return;
+    }
+    if (res && res.erro){
+      elMsg.textContent = 'Esse código expirou. Peça outro.'; return;
+    }
+    guardar({ token: res.token, expira: res.expira_em });
     await carregar();
   } catch(e){
-    elMsg.textContent = 'Código não confere ou já expirou.';
+    elMsg.textContent = 'Não consegui entrar agora. Tente de novo.';
   } finally { ocupado(false); }
 });
 
@@ -644,7 +652,10 @@ function carregarRotina(){
 /* ---------- Ações ---------- */
 document.addEventListener('click', async function(e){
   var t = e.target.closest('[data-ir]');   if (t){ ir(t.getAttribute('data-ir')); return; }
-  if (e.target.closest('[data-sair]')){ limpar(); location.reload(); return; }
+  if (e.target.closest('[data-sair]')){
+    try { await rpc('clube_sair', {}); } catch(err){}
+    limpar(); location.reload(); return;
+  }
 
   var passo = e.target.closest('#s-rotina .step');
   if (passo){
@@ -715,15 +726,8 @@ async function carregar(){
 }
 
 (async function iniciar(){
-  /* volta do link mágico: os tokens chegam no hash da URL */
-  if (location.hash && location.hash.indexOf('access_token') > -1){
-    var h = new URLSearchParams(location.hash.slice(1));
-    guardar({ access_token: h.get('access_token'), refresh_token: h.get('refresh_token') });
-    history.replaceState(null, '', location.pathname);
-  } else {
-    sessao = ler();
-  }
-  if (sessao && sessao.access_token) await carregar(); else ir('login');
+  sessao = ler();
+  if (sessao && sessao.token) await carregar(); else ir('login');
 })();
 })();
 </script>
