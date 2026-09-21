@@ -1266,8 +1266,10 @@ async function montarPeca(formato){
   halo.addColorStop(0, 'rgba(11,123,214,.13)'); halo.addColorStop(1, 'rgba(11,123,214,0)');
   ctx.fillStyle = halo; ctx.fillRect(0, 0, T.w, T.h);
 
+  /* O Instagram cobre o topo e o rodape dos stories com a propria interface.
+     Por isso a composicao vive no meio seguro da tela. */
   var alto = (formato === 'story');
-  var topo = alto ? 200 : 120;
+  var topo = alto ? 300 : 120;
 
   textoCentrado(ctx, 'DIVESSENCE', topo, '600 46px Fraunces, Georgia, serif', '#0B0D10', 11);
   textoCentrado(ctx, 'SÉRUM GHK-Cu', topo + 44,
@@ -1307,7 +1309,7 @@ async function montarPeca(formato){
   etiqueta('DIA ' + z, marg + lw + gap + lw/2, ey, true);
 
   /* rodape: a marcacao vai impressa, para sobreviver a qualquer recorte */
-  var ry = alto ? T.h - 250 : T.h - 150;
+  var ry = alto ? T.h - 400 : T.h - 150;
   ctx.save();
   ctx.strokeStyle = '#CBD9E6'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(T.w*0.28, ry - 70); ctx.lineTo(T.w*0.72, ry - 70); ctx.stroke();
