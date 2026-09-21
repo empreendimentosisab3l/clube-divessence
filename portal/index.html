@@ -540,9 +540,21 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
         <p class="label">Depois de postar</p>
         <h2 style="margin-top:6px;">Cole o link do post<br>e ganhe <span id="ppPontos">—</span> pontos.</h2>
         <p class="lede" style="margin-top:10px;">
-          O ponto sai quando o post está no ar, não quando você toca aqui. A gente confere
-          se a marcação está lá e libera.
+          O ponto sai quando o post está no ar, não quando você toca aqui. A conferência é
+          automática e leva cerca de um minuto: o sistema abre o seu post, confere que ele é
+          público, que é da sua conta e que a marcação está na legenda.
         </p>
+
+        <div id="igBox" style="margin-top:16px;display:none;">
+          <p class="fine" style="margin-bottom:8px;">
+            Primeiro, qual é o seu Instagram? É assim que a conferência sabe que o post é seu.
+          </p>
+          <input class="input" id="igHandle" type="text" inputmode="text"
+                 placeholder="@seuinstagram" aria-label="Seu Instagram">
+          <div style="margin-top:10px;">
+            <button class="btn btn--ghost" id="btnSalvarIg">Salvar meu @</button>
+          </div>
+        </div>
 
         <div id="postForm" style="margin-top:16px;">
           <input class="input" id="postUrl" type="url" inputmode="url"
@@ -1491,7 +1503,12 @@ async function carregarPosts(){
 
   document.getElementById('ppPontos').textContent = meusPosts.pontos_por_post;
 
-  var pode = meusPosts.pode_enviar;
+  /* sem o @ dela a conferencia nao sabe de quem e o post */
+  var temIg = !!meusPosts.instagram;
+  document.getElementById('igBox').style.display = temIg ? 'none' : 'block';
+  if (temIg) document.getElementById('igHandle').value = '@' + meusPosts.instagram;
+
+  var pode = meusPosts.pode_enviar && temIg;
   document.getElementById('postForm').style.display   = pode ? 'block' : 'none';
   document.getElementById('postEspera').style.display = pode ? 'none'  : 'block';
   if (!pode){
@@ -1504,11 +1521,34 @@ async function carregarPosts(){
   document.getElementById('postLista').innerHTML = (meusPosts.lista || []).map(function(x){
     var selo = x.status === 'aprovado' ? '<span class="selo selo--ok">Aprovado · +' + x.pontos + '</span>'
              : x.status === 'recusado' ? '<span class="selo selo--nao">Não contou</span>'
-             : '<span class="selo selo--pend">Em conferência</span>';
+             : x.checado                ? '<span class="selo selo--pend">Em análise</span>'
+             : '<span class="selo selo--pend">Conferindo…</span>';
+    var motivo = x.motivo ? '<p class="fine" style="margin:-4px 0 10px;">' + x.motivo + '</p>' : '';
     return '<div class="postlin"><a href="' + x.url + '" target="_blank" rel="noopener">' +
-           x.url.replace(/^https?:\/\/(www\.)?/,'') + '</a>' + selo + '</div>';
+           x.url.replace(/^https?:\/\/(www\.)?/,'') + '</a>' + selo + '</div>' + motivo;
   }).join('');
 }
+
+document.getElementById('btnSalvarIg').addEventListener('click', async function(){
+  var v = (document.getElementById('igHandle').value || '').trim();
+  if (v.replace(/[^A-Za-z0-9_.]/g,'').length < 2){ aviso('Confira o seu @.', true); return; }
+  this.disabled = true;
+  try{
+    var r = await rpc('clube_salvar_instagram', { p_handle: v });
+    if (r && r.ok){ aviso('Anotado: @' + r.handle); await carregarPosts(); }
+    else aviso('Não consegui salvar.', true);
+  } catch(e){ aviso('Não consegui salvar.', true); }
+  finally { this.disabled = false; }
+});
+
+/* enquanto houver post conferindo, reconsulta sozinho */
+setInterval(async function(){
+  var tela = document.getElementById('s-compartilhar');
+  if (!tela || !tela.classList.contains('is-active')) return;
+  if (!meusPosts || !(meusPosts.lista||[]).some(function(x){
+        return x.status === 'pendente' && !x.checado; })) return;
+  await carregarPosts();
+}, 15000);
 
 document.getElementById('btnEnviarPost').addEventListener('click', async function(){
   var campo = document.getElementById('postUrl');
