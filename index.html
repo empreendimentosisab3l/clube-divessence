@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Prototipo navegavel do Clube Divessence: fidelidade, rotina, reposicao e indicacao. Dados ficticios.">
+<meta name="theme-color" content="#E1E9F1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Clube Divessence">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B7BD6'/%3E%3Cpath d='M16 6c4 6 6.5 9 6.5 12.2A6.5 6.5 0 0 1 16 25a6.5 6.5 0 0 1-6.5-6.8C9.5 15 12 12 16 6Z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Clube Divessence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CLUBE DIVESSENCE — protótipo navegável
+   Tokens tirados de divessencebeauty.com.br/assets/css/styles.css
+   Registro claro dominante; escuro é acento raro (1 bloco por tela)
+   ============================================================ */
+:root{
+  --ink:#0B0D10;
+  --ink-soft:#1C2229;
+  --ivory:#FFFFFF;
+  --cream:#F2F7FB;
+  --sand:#E1E9F1;
+  --sand-line:#E0E8F0;
+  --blue:#0B7BD6;        /* o CSS do site chama de --copper, mas o valor é azul */
+  --blue-dp:#075CA3;
+  --stone:#545E68;
+  --stone-lt:#8A96A1;
+  --gold:#B8862F;
+
+  --radius:18px;
+  --radius-sm:12px;
+  --pill:100px;
+
+  --shadow-sm:0 1px 2px rgba(11,13,16,.04), 0 2px 8px rgba(11,13,16,.04);
+  --shadow-md:0 2px 4px rgba(11,13,16,.04), 0 12px 32px rgba(11,13,16,.07);
+  --shadow-lg:0 4px 8px rgba(11,13,16,.05), 0 24px 56px rgba(11,13,16,.10);
+
+  --serif:'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans:'Manrope', Helvetica, Arial, sans-serif;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+html,body{height:100%;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:var(--sans);
+  background:var(--sand);
+  color:var(--ink);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Moldura de apresentação (só no desktop) ---------- */
+.stage{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+.device{
+  width:100%;
+  max-width:100%;
+  height:100%;   /* o scroll acontece dentro do .viewport, nunca na janela */
+  background:var(--ivory);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+@media (min-width:900px){
+  .stage{padding:40px 20px;background:
+    radial-gradient(1200px 600px at 50% -10%, #EDF4FA 0%, var(--sand) 60%);}
+  .device{
+    max-width:390px;
+    height:844px;
+    max-height:100%;
+    border-radius:44px;
+    box-shadow:var(--shadow-lg), 0 0 0 10px #fff, 0 0 0 11px var(--sand-line);
+  }
+}
+
+/* ---------- Scroll interno ---------- */
+.viewport{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+.viewport::-webkit-scrollbar{width:0;}
+
+/* ---------- Telas ---------- */
+.screen{display:none;padding-bottom:104px;}
+.screen.is-active{display:block;animation:screenIn .42s var(--ease) both;}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ---------- Tipografia ---------- */
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.01em;}
+h1{font-size:34px;line-height:1.1;}
+h2{font-size:25px;line-height:1.15;}
+h3{font-size:19px;line-height:1.2;}
+
+.label{
+  font-family:var(--sans);
+  text-transform:uppercase;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.16em;
+  color:var(--stone-lt);
+}
+.lede{font-size:15px;color:var(--stone);line-height:1.55;}
+.fine{font-size:11.5px;line-height:1.45;color:var(--stone-lt);}
+.num{font-variant-numeric:tabular-nums;}
+
+/* ---------- Estruturas ---------- */
+.pad{padding:0 22px;}
+.stack>*+*{margin-top:14px;}
+.row{display:flex;align-items:center;gap:12px;}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.rule{height:1px;background:var(--sand-line);border:0;margin:26px auto;width:72%;}
+
+.card{
+  background:var(--ivory);
+  border:1px solid var(--sand-line);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow-sm);
+}
+.card--flat{box-shadow:none;}
+.card--cream{background:var(--cream);border-color:transparent;}
+
+/* O acento escuro: no máximo um bloco por tela */
+.card--ink{
+  background:var(--ink);
+  color:var(--ivory);
+  border-color:transparent;
+  box-shadow:var(--shadow-md);
+}
+.card--ink .label{color:rgba(255,255,255,.52);}
+.card--ink .lede{color:rgba(255,255,255,.76);}
+.card--ink .fine{color:rgba(255,255,255,.45);}
+
+/* ---------- Botões ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--sans);font-size:14.5px;font-weight:700;letter-spacing:.01em;
+  border-radius:var(--pill);
+  padding:15px 26px;
+  border:1px solid transparent;
+  cursor:pointer;
+  text-decoration:none;
+  transition:transform .18s var(--ease), background .18s var(--ease), box-shadow .18s var(--ease);
+  width:100%;
+}
+.btn:active{transform:scale(.975);}
+.btn--solid{background:var(--ink);color:var(--ivory);}
+.btn--solid:hover{background:#000;box-shadow:var(--shadow-md);}
+.btn--blue{background:var(--blue);color:#fff;}
+.btn--blue:hover{background:var(--blue-dp);box-shadow:0 8px 24px rgba(11,123,214,.28);}
+.btn--ghost{background:transparent;color:var(--ink);border-color:var(--sand-line);}
+.btn--ghost:hover{background:var(--cream);}
+.btn--light{background:var(--ivory);color:var(--ink);}
+.btn--sm{padding:10px 18px;font-size:13px;width:auto;}
+
+/* ---------- Cabeçalho ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:rgba(255,255,255,.86);
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--sand-line);
+  padding:16px 22px 14px;
+}
+.brand{
+  font-family:var(--serif);
+  font-size:15px;letter-spacing:.22em;text-transform:uppercase;
+}
+.brand small{
+  display:block;font-family:var(--sans);
+  font-size:8.5px;letter-spacing:.3em;color:var(--stone-lt);
+  font-weight:700;margin-top:3px;
+}
+
+/* ---------- Selo de nível ---------- */
+.tier{
+  display:inline-flex;align-items:center;gap:7px;
+  border-radius:var(--pill);
+  padding:6px 13px 6px 9px;
+  background:var(--cream);
+  font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--blue-dp);
+}
+.tier i{width:7px;height:7px;border-radius:50%;background:var(--blue);display:block;}
+.tier--amb{background:#FBF3E2;color:#8A6318;}
+.tier--amb i{background:var(--gold);}
+
+/* ---------- Barra de progresso ---------- */
+.meter{height:7px;border-radius:var(--pill);background:var(--sand-line);overflow:hidden;}
+.meter i{
+  display:block;height:100%;border-radius:var(--pill);
+  background:linear-gradient(90deg,var(--blue),#3FA0EC);
+  width:0;transition:width 1.1s var(--ease);
+}
+.card--ink .meter{background:rgba(255,255,255,.16);}
+
+/* ---------- Frasco com nível ---------- */
+.vial{
+  flex:none;display:block;width:34px;height:60px;border-radius:9px 9px 11px 11px;
+  border:1.5px solid rgba(255,255,255,.34);position:relative;
+  background:rgba(255,255,255,.07);margin-top:9px;
+}
+.vial::before{
+  content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  width:15px;height:9px;border-radius:3px 3px 0 0;background:rgba(255,255,255,.34);
+}
+.vial i{
+  position:absolute;left:0;right:0;bottom:0;height:var(--level,50%);
+  background:linear-gradient(180deg,#5FB2F0,var(--blue));
+  border-radius:0 0 10px 10px;
+  transition:height 1.1s var(--ease);
+}
+.vial--lg{width:64px;height:112px;border-radius:15px 15px 18px 18px;
+  border-color:var(--sand-line);background:var(--cream);margin-top:15px;}
+.vial--lg i{border-radius:0 0 17px 17px;}
+.vial--lg::before{width:26px;height:15px;top:-15px;background:var(--sand-line);}
+
+/* ---------- Opção de reposição ---------- */
+.opt{
+  display:block;width:100%;text-align:left;cursor:pointer;
+  background:var(--ivory);border:1.5px solid var(--sand-line);
+  border-radius:var(--radius);padding:17px 18px;
+  transition:border-color .2s var(--ease), box-shadow .2s var(--ease);
+  position:relative;font-family:var(--sans);
+}
+.opt:hover{border-color:#BCD3E7;}
+.opt.pick{border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,123,214,.11);}
+.opt.pick::after{
+  content:"MELHOR PARA VOCÊ";position:absolute;top:-9px;left:16px;
+  background:var(--blue);color:#fff;font-size:8.5px;font-weight:800;
+  letter-spacing:.13em;padding:4px 9px;border-radius:var(--pill);
+}
+.opt-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.opt-n{font-family:var(--serif);font-size:18px;}
+.opt-p{font-family:var(--serif);font-size:20px;white-space:nowrap;}
+.opt-d{display:block;font-size:12.5px;color:var(--stone-lt);margin-top:5px;line-height:1.45;}
+
+/* ---------- Saldo ---------- */
+.balance{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(420px 220px at 88% -30%, #DCEBFA 0%, rgba(220,235,250,0) 62%),
+    linear-gradient(170deg,#FBFDFF 0%, var(--cream) 100%);
+  border:1px solid var(--sand-line);
+  border-radius:var(--radius);
+  padding:22px;
+}
+.balance::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(11,13,16,.035) 1px, transparent 1px);
+  background-size:4px 4px;mix-blend-mode:multiply;
+}
+.balance .figure{
+  font-family:var(--serif);font-size:49px;line-height:1;letter-spacing:-.025em;
+}
+.balance .unit{font-family:var(--sans);font-size:12px;font-weight:800;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--stone-lt);margin-left:7px;}
+
+/* ---------- Lista de passos ---------- */
+.step{
+  display:flex;gap:13px;align-items:flex-start;
+  padding:14px 0;border-bottom:1px solid var(--sand-line);
+  cursor:pointer;user-select:none;
+}
+.step:last-child{border-bottom:0;}
+.tick{
+  flex:none;width:23px;height:23px;border-radius:50%;
+  border:1.5px solid var(--sand-line);background:var(--ivory);
+  display:grid;place-items:center;margin-top:1px;
+  transition:all .22s var(--ease);
+}
+.tick svg{width:11px;height:11px;stroke:#fff;stroke-width:2.6;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;
+  opacity:0;transform:scale(.4);transition:all .22s var(--ease);}
+.step.done .tick{background:var(--blue);border-color:var(--blue);}
+.step.done .tick svg{opacity:1;transform:none;}
+.step.done .step-t{color:var(--stone-lt);text-decoration:line-through;}
+.step-t{font-size:14.5px;font-weight:600;transition:color .2s;}
+.step-d{font-size:12.5px;color:var(--stone-lt);margin-top:2px;}
+
+/* ---------- Sequência de dias ---------- */
+.streak{display:flex;gap:6px;}
+.streak span{
+  flex:1;height:34px;border-radius:8px;background:var(--sand-line);
+  display:grid;place-items:center;font-size:10px;font-weight:800;color:var(--stone-lt);
+}
+.streak span.on{background:var(--blue);color:#fff;}
+.streak span.today{background:var(--ink);color:#fff;box-shadow:0 0 0 3px rgba(11,13,16,.08);}
+
+/* ---------- Timeline da pele ---------- */
+.phase{display:flex;gap:14px;position:relative;padding-bottom:22px;}
+.phase:last-child{padding-bottom:0;}
+.phase::before{
+  content:"";position:absolute;left:8px;top:20px;bottom:0;width:1.5px;background:var(--sand-line);
+}
+.phase:last-child::before{display:none;}
+.dot{
+  flex:none;width:17px;height:17px;border-radius:50%;
+  background:var(--ivory);border:1.5px solid var(--sand-line);
+  margin-top:3px;z-index:1;
+}
+.phase.past .dot{background:var(--blue);border-color:var(--blue);}
+.phase.past::before{background:var(--blue);opacity:.35;}
+.phase.now .dot{
+  background:var(--ink);border-color:var(--ink);
+  box-shadow:0 0 0 4px rgba(11,13,16,.10);
+  animation:pulse 2.6s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(11,13,16,.10);}50%{box-shadow:0 0 0 8px rgba(11,13,16,.05);}}
+.phase-w{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--stone-lt);}
+.phase.now .phase-w{color:var(--blue);}
+.phase-t{font-family:var(--serif);font-size:17px;margin-top:3px;}
+.phase.future .phase-t,.phase.future .phase-w{opacity:.42;}
+
+/* ---------- Fotos ---------- */
+.shots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.shot{
+  aspect-ratio:3/4;border-radius:var(--radius-sm);overflow:hidden;
+  position:relative;border:1px solid var(--sand-line);
+}
+.shot figcaption{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:5px 6px;font-size:9.5px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:#fff;
+  background:linear-gradient(transparent,rgba(11,13,16,.62));
+  text-align:center;
+}
+.shot--empty{
+  display:grid;place-items:center;background:var(--cream);
+  border-style:dashed;border-color:#CBD8E5;
+}
+.shot--empty span{font-size:10px;font-weight:800;color:var(--stone-lt);letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:0 4px;}
+
+/* comparador antes/depois */
+.compare{
+  position:relative;border-radius:var(--radius);overflow:hidden;
+  aspect-ratio:4/3;border:1px solid var(--sand-line);cursor:ew-resize;
+  touch-action:none;
+}
+.compare .layer{position:absolute;inset:0;}
+.compare .layer--after{clip-path:inset(0 0 0 50%);}
+.compare .handle{
+  position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;
+  box-shadow:0 0 0 1px rgba(11,13,16,.14);transform:translateX(-1px);
+}
+.compare .grip{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:38px;height:38px;border-radius:50%;background:#fff;
+  box-shadow:var(--shadow-md);display:grid;place-items:center;
+  font-size:13px;color:var(--ink);font-weight:800;
+}
+.compare .tagl,.compare .tagr{
+  position:absolute;bottom:11px;font-size:10px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:#fff;background:rgba(11,13,16,.55);
+  padding:5px 10px;border-radius:var(--pill);backdrop-filter:blur(4px);
+}
+.compare .tagl{left:11px;} .compare .tagr{right:11px;}
+
+/* ---------- Escada de marcos ---------- */
+.mile{
+  display:flex;gap:13px;align-items:center;
+  padding:13px 0;border-bottom:1px solid var(--sand-line);
+}
+.mile:last-child{border-bottom:0;}
+.mile-n{
+  flex:none;width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;font-size:13px;font-weight:800;
+  background:var(--cream);color:var(--stone-lt);border:1px solid var(--sand-line);
+}
+.mile.won .mile-n,.mile-n.won{background:var(--blue);color:#fff;border-color:var(--blue);}
+.mile.next .mile-n,.mile-n.next{background:var(--ink);color:#fff;border-color:var(--ink);}
+.mile-t{font-size:14px;font-weight:700;}
+.mile-d{font-size:12px;color:var(--stone-lt);margin-top:1px;}
+.mile.locked{opacity:.5;}
+.mile-badge{
+  margin-left:auto;flex:none;font-size:9.5px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 9px;border-radius:var(--pill);
+}
+.mile.won .mile-badge{background:#E7F2FC;color:var(--blue-dp);}
+.mile.next .mile-badge{background:var(--ink);color:#fff;}
+
+/* ---------- Link pessoal ---------- */
+.linkbox{
+  display:flex;align-items:center;gap:10px;
+  background:var(--cream);border:1px dashed #C6D5E4;
+  border-radius:var(--radius-sm);padding:13px 15px;
+}
+.linkbox code{
+  font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
+}
+.copybtn{
+  flex:none;border:0;background:var(--ink);color:#fff;border-radius:var(--pill);
+  font-family:var(--sans);font-size:11px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;padding:8px 13px;cursor:pointer;transition:background .2s;
+}
+.copybtn.ok{background:var(--blue);}
+
+/* ---------- Missões ---------- */
+.mission{
+  display:flex;gap:13px;align-items:center;padding:15px 0;
+  border-bottom:1px solid var(--sand-line);
+}
+.mission:last-child{border-bottom:0;}
+.mission-pts{
+  flex:none;margin-left:auto;font-size:12px;font-weight:800;color:var(--blue);
+  white-space:nowrap;
+}
+.mission.done .mission-pts{color:var(--stone-lt);}
+
+/* ---------- Catálogo de resgate ---------- */
+.reward{
+  display:flex;gap:14px;align-items:center;padding:15px 0;
+  border-bottom:1px solid var(--sand-line);
+}
+.reward:last-child{border-bottom:0;}
+.reward-img{
+  flex:none;width:52px;height:52px;border-radius:var(--radius-sm);
+  background:linear-gradient(150deg,#EAF3FB,#D6E7F6);
+  display:grid;place-items:center;font-size:21px;
+}
+.reward.locked{opacity:.45;}
+
+/* ---------- Níveis da escada ---------- */
+.lvl{
+  border:1px solid var(--sand-line);border-radius:var(--radius);
+  padding:18px;position:relative;overflow:hidden;
+}
+.lvl.current{border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,123,214,.10);}
+.lvl.current::before{
+  content:"VOCÊ ESTÁ AQUI";position:absolute;top:0;right:0;
+  background:var(--blue);color:#fff;font-size:8.5px;font-weight:800;
+  letter-spacing:.14em;padding:5px 11px;border-bottom-left-radius:10px;
+}
+.lvl ul{list-style:none;margin-top:11px;}
+.lvl li{
+  font-size:13px;color:var(--stone);padding-left:17px;position:relative;
+  margin-top:6px;line-height:1.45;
+}
+.lvl li::before{
+  content:"";position:absolute;left:0;top:7px;width:5px;height:5px;
+  border-radius:50%;background:var(--blue);
+}
+
+/* ---------- Navegação inferior ---------- */
+.tabbar{
+  position:absolute;left:0;right:0;bottom:0;z-index:30;
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:rgba(255,255,255,.93);
+  backdrop-filter:saturate(180%) blur(16px);
+  -webkit-backdrop-filter:saturate(180%) blur(16px);
+  border-top:1px solid var(--sand-line);
+  padding:9px 6px 9px;
+}
+@media (min-width:900px){.device .tabbar{border-radius:0 0 44px 44px;}}
+.tab{
+  border:0;background:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:5px 2px;border-radius:12px;
+  font-family:var(--sans);font-size:9.5px;font-weight:700;letter-spacing:.03em;
+  color:var(--stone-lt);transition:color .2s var(--ease);
+}
+.tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;transition:transform .24s var(--ease);}
+.tab.is-on{color:var(--ink);}
+.tab.is-on svg{stroke:var(--blue);transform:translateY(-1px);}
+
+/* ---------- Barra do protótipo ---------- */
+.protobar{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;gap:6px;align-items:center;
+  background:rgba(11,13,16,.90);backdrop-filter:blur(10px);
+  border-radius:var(--pill);padding:6px 6px 6px 15px;
+  box-shadow:var(--shadow-md);
+}
+.protobar span{font-size:9.5px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);}
+.protobar select{
+  font-family:var(--sans);font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.12);color:#fff;border:0;
+  border-radius:var(--pill);padding:7px 12px;cursor:pointer;outline:none;
+}
+.protobar select option{background:var(--ink);color:#fff;}
+@media (max-width:899px){.protobar{top:auto;bottom:calc(88px + env(safe-area-inset-bottom,0px));}}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:absolute;left:22px;right:22px;bottom:96px;z-index:60;
+  background:var(--ink);color:#fff;border-radius:var(--radius-sm);
+  padding:13px 16px;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow-lg);
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:all .3s var(--ease);
+}
+.toast.show{opacity:1;transform:none;}
+
+/* ---------- Reveal escalonado ---------- */
+.rv{animation:rv .5s var(--ease) both;}
+@keyframes rv{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.d1{animation-delay:.05s}.d2{animation-delay:.11s}.d3{animation-delay:.17s}
+.d4{animation-delay:.23s}.d5{animation-delay:.29s}.d6{animation-delay:.35s}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important;}
+}
+</style>
+<style>
+/* Fora do Artifact, a area segura do aparelho e responsabilidade da pagina. */
+html{
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+</style>
+</head>
+<body>
+<div class="protobar">
+  <span>Protótipo</span>
+  <select id="jump" aria-label="Ir para a tela">
+    <option value="entrada">1 · Entrada pós-compra</option>
+    <option value="inicio" selected>2 · Início do clube</option>
+    <option value="rotina">3 · Minha rotina</option>
+    <option value="progresso">4 · Progresso e fotos</option>
+    <option value="reposicao">5 · Reposição do frasco</option>
+    <option value="indicar">6 · Indicar e marcos</option>
+    <option value="clube">7 · Missões, resgate e escada</option>
+    <option value="publica">8 · Página pública da cliente</option>
+  </select>
+</div>
+
+<div class="stage">
+<div class="device">
+  <div class="viewport" id="viewport">
+
+    <!-- ══════════════ 1 · ENTRADA PÓS-COMPRA ══════════════ -->
+    <section class="screen" id="s-entrada">
+      <div style="
+        min-height:720px;display:flex;flex-direction:column;justify-content:center;
+        padding:48px 30px;text-align:center;
+        background:
+          radial-gradient(520px 340px at 50% 14%, #DCEBFA 0%, rgba(220,235,250,0) 66%),
+          linear-gradient(180deg,#FBFDFF 0%, var(--cream) 100%);">
+
+        <div class="rv d1">
+          <div class="brand" style="font-size:17px;">Divessence
+            <small>Clube de quem cuida</small>
+          </div>
+        </div>
+
+        <div class="rv d2" style="margin:40px 0 0;">
+          <!-- frasco -->
+          <svg viewBox="0 0 120 170" style="width:104px;height:auto;filter:drop-shadow(0 18px 30px rgba(11,123,214,.20));" aria-hidden="true">
+            <defs>
+              <linearGradient id="gl" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#EAF3FB"/><stop offset="1" stop-color="#CFE3F5"/>
+              </linearGradient>
+            </defs>
+            <rect x="46" y="4" width="28" height="26" rx="5" fill="#B9C9D8"/>
+            <rect x="50" y="26" width="20" height="12" fill="#D7E4EF"/>
+            <rect x="26" y="36" width="68" height="128" rx="15" fill="url(#gl)" stroke="#D2E1EE"/>
+            <rect x="38" y="74" width="44" height="1.6" fill="#0B7BD6" opacity=".55"/>
+            <text x="60" y="66" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-size="12" fill="#0B0D10" letter-spacing="2">GHK-Cu</text>
+            <text x="60" y="92" text-anchor="middle" font-family="Manrope,Arial" font-size="7" font-weight="700" fill="#545E68" letter-spacing="2.4">SÉRUM · 30ML</text>
+            <rect x="26" y="126" width="68" height="38" rx="15" fill="#0B7BD6" opacity=".07"/>
+          </svg>
+        </div>
+
+        <h1 class="rv d3" style="margin-top:34px;font-size:37px;">
+          Seu frasco<br>abriu uma porta.
+        </h1>
+
+        <p class="lede rv d4" style="margin-top:16px;max-width:290px;margin-left:auto;margin-right:auto;">
+          O GHK-Cu leva de 8 a 12 semanas para consolidar o resultado. O clube existe
+          para você atravessar esse tempo vendo o que o espelho ainda esconde.
+        </p>
+
+        <div class="rv d5" style="margin-top:34px;">
+          <button class="btn btn--solid" data-go="inicio">Ativar meu acesso</button>
+          <p class="fine" style="margin-top:14px;">
+            Grátis e para sempre, por ter comprado. Sem mensalidade.
+          </p>
+        </div>
+
+        <div class="rv d6" style="margin-top:38px;display:flex;justify-content:center;gap:26px;">
+          <div><div style="font-family:var(--serif);font-size:21px;">4,9</div><div class="fine">2.420 avaliações</div></div>
+          <div style="width:1px;background:var(--sand-line);"></div>
+          <div><div style="font-family:var(--serif);font-size:21px;">30 dias</div><div class="fine">de garantia</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 2 · INÍCIO ══════════════ -->
+    <section class="screen is-active" id="s-inicio">
+      <header class="topbar">
+        <div class="between">
+          <div class="brand">Divessence<small>Clube</small></div>
+          <span class="tier"><i></i>Membro</span>
+        </div>
+      </header>
+
+      <div class="pad" style="padding-top:22px;">
+        <div class="rv d1">
+          <p class="label">Terça, dia 34 do seu protocolo</p>
+          <h1 style="margin-top:7px;">Bom dia, Ana.</h1>
+        </div>
+
+        <div class="balance rv d2" style="margin-top:20px;">
+          <p class="label">Seu saldo</p>
+          <div style="display:flex;align-items:baseline;margin-top:5px;">
+            <span class="figure num">420</span><span class="unit">pontos</span>
+          </div>
+          <div style="margin-top:18px;">
+            <div class="between" style="margin-bottom:8px;">
+              <span class="fine" style="font-weight:700;color:var(--stone);">Faltam 80 para Embaixadora</span>
+              <span class="fine num">420 / 500</span>
+            </div>
+            <div class="meter"><i data-fill="84"></i></div>
+          </div>
+        </div>
+
+        <div class="card rv d3" style="margin-top:14px;">
+          <div class="between">
+            <div>
+              <p class="label">Agora</p>
+              <h3 style="margin-top:5px;">Sua rotina da manhã</h3>
+              <p class="fine" style="margin-top:4px;">3 passos · leva 2 minutos</p>
+            </div>
+            <div style="text-align:right;flex:none;">
+              <div style="font-family:var(--serif);font-size:30px;line-height:1;">12</div>
+              <div class="fine" style="margin-top:2px;">dias seguidos</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="btn btn--blue" data-go="rotina">Fazer agora</button>
+          </div>
+        </div>
+
+        <div class="card rv d4" style="margin-top:14px;">
+          <div class="between">
+            <div>
+              <p class="label">Próximo marco</p>
+              <h3 style="margin-top:5px;">Falta 1 amiga</h3>
+              <p class="fine" style="margin-top:4px;">A terceira libera a miniatura de 10ml</p>
+            </div>
+            <div class="mile-n next" style="width:44px;height:44px;font-size:15px;">3</div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn--ghost" data-go="indicar">Ver meus marcos</button>
+          </div>
+        </div>
+
+        <!-- o único bloco escuro desta tela -->
+        <div class="card card--ink rv d5" style="margin-top:14px;">
+          <div class="row" style="align-items:flex-start;">
+            <div style="flex:1;">
+              <p class="label">Seu frasco</p>
+              <h3 style="margin-top:7px;color:var(--ivory);">Acaba em 26 dias.</h3>
+              <p class="lede" style="margin-top:8px;">
+                Contado pelas 68 aplicações que você marcou, não pelo calendário.
+              </p>
+            </div>
+            <span class="vial" style="--level:43%;" aria-hidden="true"><i></i></span>
+          </div>
+          <div style="margin-top:16px;">
+            <div class="between" style="margin-bottom:8px;">
+              <span class="fine" style="font-weight:700;color:rgba(255,255,255,.8);">68 de 120 aplicações</span>
+              <span class="fine num">57%</span>
+            </div>
+            <div class="meter"><i data-fill="57"></i></div>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="btn btn--light" data-go="reposicao">Resolver a reposição</button>
+          </div>
+        </div>
+
+        <hr class="rule">
+        <p class="fine" style="text-align:center;padding-bottom:6px;">
+          Clube Divessence · protótipo com dados fictícios
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════ 3 · ROTINA ══════════════ -->
+    <section class="screen" id="s-rotina">
+      <header class="topbar">
+        <div class="between">
+          <div class="brand">Minha rotina</div>
+          <span class="tier"><i></i>Dia 34</span>
+        </div>
+      </header>
+
+      <div class="pad" style="padding-top:22px;">
+        <div class="card card--cream rv d1">
+          <div class="between">
+            <div>
+              <p class="label">Sequência</p>
+              <div style="font-family:var(--serif);font-size:31px;line-height:1.05;margin-top:3px;">12 dias</div>
+            </div>
+            <div style="text-align:right;">
+              <p class="fine">Você tem 1 perdão<br>guardado para faltas.</p>
+            </div>
+          </div>
+          <div class="streak" style="margin-top:15px;">
+            <span class="on">S</span><span class="on">T</span><span class="on">Q</span>
+            <span class="on">Q</span><span class="on">S</span><span class="on">S</span>
+            <span class="today">D</span>
+          </div>
+        </div>
+
+        <div class="card rv d2" style="margin-top:14px;">
+          <div class="between" style="margin-bottom:4px;">
+            <h3>Manhã</h3><span class="label">2 de 3</span>
+          </div>
+          <div class="step done"><span class="tick"><svg viewBox="0 0 12 12"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">Pele limpa e seca</div><div class="step-d">Sem resíduo de sabonete</div></div></div>
+          <div class="step done"><span class="tick"><svg viewBox="0 0 12 12"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">2 a 3 gotas de GHK-Cu</div><div class="step-d">Rosto e pescoço, antes do hidratante</div></div></div>
+          <div class="step"><span class="tick"><svg viewBox="0 0 12 12"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">Protetor solar</div><div class="step-d">Sem ele o cobre trabalha contra o sol</div></div></div>
+        </div>
+
+        <div class="card rv d3" style="margin-top:14px;">
+          <div class="between" style="margin-bottom:4px;">
+            <h3>Noite</h3><span class="label">0 de 2</span>
+          </div>
+          <div class="step"><span class="tick"><svg viewBox="0 0 12 12"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">Pele limpa e seca</div><div class="step-d">Retire a maquiagem antes</div></div></div>
+          <div class="step"><span class="tick"><svg viewBox="0 0 12 12"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">2 a 3 gotas de GHK-Cu</div><div class="step-d">Depois o seu hidratante de sempre</div></div></div>
+        </div>
+
+        <hr class="rule">
+
+        <div class="rv d4">
+          <p class="label">Onde você está</p>
+          <h2 style="margin-top:7px;margin-bottom:18px;">A pele não muda<br>no mesmo dia em que você começa.</h2>
+
+          <div class="phase past"><span class="dot"></span><div>
+            <div class="phase-w">Primeiros dias</div>
+            <div class="phase-t">Hidratação e conforto</div></div></div>
+
+          <div class="phase past"><span class="dot"></span><div>
+            <div class="phase-w">2 semanas</div>
+            <div class="phase-t">Textura refinada, viço</div></div></div>
+
+          <div class="phase now"><span class="dot"></span><div>
+            <div class="phase-w">4 semanas · você está aqui</div>
+            <div class="phase-t">Firmeza em evolução</div>
+            <p class="fine" style="margin-top:6px;max-width:250px;">
+              É agora que a maioria desiste, porque o espelho engana quem se olha
+              todo dia. Por isso existe a foto.
+            </p></div></div>
+
+          <div class="phase future"><span class="dot"></span><div>
+            <div class="phase-w">6 a 8 semanas</div>
+            <div class="phase-t">Luminosidade contínua</div></div></div>
+
+          <div class="phase future"><span class="dot"></span><div>
+            <div class="phase-w">8 a 12 semanas</div>
+            <div class="phase-t">Resultado consolidado</div></div></div>
+        </div>
+
+        <div style="margin-top:24px;" class="rv d5">
+          <button class="btn btn--ghost" data-go="progresso">Ver minhas fotos</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 4 · PROGRESSO ══════════════ -->
+    <section class="screen" id="s-progresso">
+      <header class="topbar">
+        <div class="between">
+          <div class="brand">Progresso</div>
+          <span class="tier"><i></i>3 registros</span>
+        </div>
+      </header>
+
+      <div class="pad" style="padding-top:22px;">
+        <div class="rv d1">
+          <p class="label">Dia 0 comparado com o dia 30</p>
+          <h1 style="margin-top:7px;font-size:30px;">O que o espelho<br>não te conta.</h1>
+        </div>
+
+        <div class="compare rv d2" id="cmp" style="margin-top:18px;">
+          <div class="layer" id="lyrBefore"></div>
+          <div class="layer layer--after" id="lyrAfter"></div>
+          <div class="tagl">Dia 0</div>
+          <div class="tagr">Dia 30</div>
+          <div class="handle" id="cmpHandle"><span class="grip">⇆</span></div>
+        </div>
+        <p class="fine rv d3" style="margin-top:10px;text-align:center;">
+          Arraste para comparar. Mesma luz, mesmo ângulo, mesma hora do dia.
+        </p>
+
+        <hr class="rule">
+
+        <div class="rv d4">
+          <div class="between" style="margin-bottom:13px;">
+            <h3>Sua linha do tempo</h3><span class="label">4 registros</span>
+          </div>
+          <div class="shots">
+            <figure class="shot" data-face="0"><figcaption>Dia 0</figcaption></figure>
+            <figure class="shot" data-face="14"><figcaption>Dia 14</figcaption></figure>
+            <figure class="shot" data-face="30"><figcaption>Dia 30</figcaption></figure>
+            <figure class="shot shot--empty"><span>Dia 60</span></figure>
+          </div>
+        </div>
+
+        <div class="card rv d5" style="margin-top:18px;">
+          <div class="between">
+            <div>
+              <p class="label">Próxima foto</p>
+              <h3 style="margin-top:5px;">Em 26 dias</h3>
+              <p class="fine" style="margin-top:4px;">A do dia 60 é a que costuma surpreender.</p>
+            </div>
+            <div class="reward-img" style="font-size:24px;">📷</div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn--blue" data-toast="A câmera abriria com a foto do dia 0 em transparência, para você repetir o ângulo.">Tirar foto de hoje</button>
+          </div>
+        </div>
+
+        <div class="card card--ink rv d6" style="margin-top:14px;">
+          <p class="label">Quando quiser</p>
+          <h3 style="margin-top:7px;color:var(--ivory);">Suas fotos são suas.</h3>
+          <p class="lede" style="margin-top:9px;">
+            Ficam guardadas só no seu aparelho. Nada sai daqui sem você mandar,
+            e você escolhe se quer mostrar na sua página.
+          </p>
+          <div style="margin-top:16px;">
+            <button class="btn btn--light" data-go="publica">Ver minha página</button>
+          </div>
+        </div>
+        <div style="height:10px;"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 5 · REPOSIÇÃO ══════════════ -->
+    <section class="screen" id="s-reposicao">
+      <header class="topbar">
+        <div class="between">
+          <div class="brand">Seu frasco</div>
+          <span class="tier"><i></i>43% restante</span>
+        </div>
+      </header>
+
+      <div class="pad" style="padding-top:24px;">
+        <div class="rv d1" style="display:flex;gap:20px;align-items:center;">
+          <span class="vial vial--lg" style="--level:43%;" aria-hidden="true"><i></i></span>
+          <div>
+            <p class="label">No seu ritmo</p>
+            <h1 style="margin-top:6px;font-size:31px;">Acaba em<br>26 dias.</h1>
+            <p class="fine" style="margin-top:7px;">Por volta de 17 de outubro.</p>
+          </div>
+        </div>
+
+        <div class="card card--cream rv d2" style="margin-top:20px;">
+          <div class="between" style="margin-bottom:9px;">
+            <span class="fine" style="font-weight:700;color:var(--stone);">68 de 120 aplicações</span>
+            <span class="fine num">57% usado</span>
+          </div>
+          <div class="meter"><i data-fill="57"></i></div>
+          <p class="fine" style="margin-top:12px;line-height:1.5;">
+            A conta não é do calendário. Vem das vezes que você marcou a rotina como
+            feita, manhã e noite. Se você pular dias, a data se afasta sozinha.
+          </p>
+        </div>
+
+        <hr class="rule">
+
+        <div class="rv d3">
+          <p class="label">Repare a coincidência</p>
+          <h2 style="margin-top:7px;">O frasco acaba na mesma semana da sua foto de 60 dias.</h2>
+          <p class="lede" style="margin-top:11px;">
+            Não é sorte, é aritmética: um frasco dura o tempo que o GHK-Cu leva para
+            mostrar o que faz. A decisão de continuar chega justo quando você
+            finalmente tem com o que comparar.
+          </p>
+        </div>
+
+        <div class="card rv d4" style="margin-top:16px;">
+          <div class="between">
+            <div>
+              <p class="label">Dia 60</p>
+              <h3 style="margin-top:5px;">Sua foto de resultado</h3>
+              <p class="fine" style="margin-top:4px;">Em 26 dias, dois dias antes do frasco acabar</p>
+            </div>
+            <div class="reward-img" style="font-size:24px;">📷</div>
+          </div>
+        </div>
+
+        <hr class="rule">
+
+        <div class="rv d5">
+          <p class="label">Como continuar</p>
+          <h2 style="margin-top:7px;">Três jeitos.<br>Um deles é mais barato.</h2>
+          <p class="fine" style="margin-top:9px;">
+            Pontos em dobro em qualquer pedido feito nesta janela.
+          </p>
+        </div>
+
+        <div class="stack rv d6" style="margin-top:22px;">
+          <button class="opt pick" data-toast="Abriria o checkout de assinatura da Payt, com pausa livre.">
+            <span class="opt-h">
+              <span class="opt-n">Assinatura mensal</span>
+              <span class="opt-p" style="color:var(--blue-dp);">R$ 87,90</span>
+            </span>
+            <span class="opt-d">
+              Chega sozinha antes de acabar, com brinde. Economiza R$ 60 por frasco
+              em relação ao avulso. Pausa ou cancela quando quiser, sem ligar para ninguém.
+            </span>
+          </button>
+
+          <button class="opt" data-toast="Abriria o checkout do kit na Payt.">
+            <span class="opt-h">
+              <span class="opt-n">Compre 2, leve 3</span>
+              <span class="opt-p">R$ 297,90</span>
+            </span>
+            <span class="opt-d">
+              R$ 99,30 por frasco, com frete incluso. Cobre seis meses de rotina,
+              que é o tempo em que o resultado se firma.
+            </span>
+          </button>
+
+          <button class="opt" data-toast="Abriria o checkout avulso na Payt.">
+            <span class="opt-h">
+              <span class="opt-n">Um frasco</span>
+              <span class="opt-p">R$ 147,90</span>
+            </span>
+            <span class="opt-d">
+              Mais dois meses, sem compromisso nenhum.
+            </span>
+          </button>
+        </div>
+
+        <div class="card card--ink rv d6" style="margin-top:18px;">
+          <p class="label">O que acontece se parar</p>
+          <h3 style="margin-top:7px;color:var(--ivory);">A pele não guarda lugar na fila.</h3>
+          <p class="lede" style="margin-top:9px;">
+            O GHK-Cu age enquanto está sendo usado. Parar não apaga o que você
+            conquistou, mas recomeçar depois de um mês parada devolve você para uma
+            fase anterior da linha do tempo. É por isso que a assinatura existe, e é a
+            única coisa que ela resolve.
+          </p>
+        </div>
+
+        <p class="fine rv d6" style="margin-top:16px;text-align:center;padding-bottom:6px;">
+          Você tem 30 dias de garantia em qualquer uma das três.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════ 6 · INDICAR ══════════════ -->
+    <section class="screen" id="s-indicar">
+      <header class="topbar">
+        <div class="between">
+          <div class="brand">Indicar</div>
+          <span class="tier"><i></i>2 amigas</span>
+        </div>
+      </header>
+
+      <div class="pad" style="padding-top:22px;">
+        <div class="rv d1">
+          <p class="label">Seu convite</p>
+          <h1 style="margin-top:7px;font-size:30px;">Ela ganha R$ 20.<br>Você também.</h1>
+          <p class="lede" style="margin-top:12px;">
+            O crédito cai quando o pedido dela passar dos 7 dias de arrependimento.
+            É o que evita que você ganhe e depois perca.
+          </p>
+        </div>
+
+        <div class="linkbox rv d2" style="margin-top:18px;">
+          <code id="reflink">divessencebeauty.com.br/ana</code>
+          <button class="copybtn" id="copyBtn">Copiar</button>
+        </div>
+
+        <div class="rv d3" style="margin-top:14px;">
+          <button class="btn btn--blue" data-toast="Abriria o WhatsApp com a mensagem já escrita, em primeira pessoa.">
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.8-.6-3.1-1.3-5.1-4.4-5.3-4.6-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.2c.1.2.1.4 0 .6l-.4.6-.3.3c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.7-.1l.9-1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4.1.1.1.6-.1 1.3Z"/></svg>
+            Chamar no WhatsApp
+          </button>
+        </div>
+        <p class="fine rv d3" style="margin-top:9px;text-align:center;">
+          Sete em cada dez indicações acontecem em conversa privada, não no feed.
+        </p>
+
+        <hr class="rule">
+
+        <div class="rv d4">
+          <div class="between" style="margin-bottom:6px;">
+            <h3>Seus marcos</h3><span class="label">2 de 30</span>
+          </div>
+          <p class="fine" style="margin-bottom:10px;">Eles somam para sempre e não expiram.</p>
+
+          <div class="mile won"><span class="mile-n">1</span><div>
+            <div class="mile-t">Primeira amiga</div><div class="mile-d">R$ 20 de crédito</div></div>
+            <span class="mile-badge">Conquistado</span></div>
+
+          <div class="mile won"><span class="mile-n">2</span><div>
+            <div class="mile-t">Segunda amiga</div><div class="mile-d">R$ 20 de crédito</div></div>
+            <span class="mile-badge">Conquistado</span></div>
+
+          <div class="mile next"><span class="mile-n">3</span><div>
+            <div class="mile-t">Miniatura de 10ml</div><div class="mile-d">Para levar na bolsa ou dar de presente</div></div>
+            <span class="mile-badge">Falta 1</span></div>
+
+          <div class="mile locked"><span class="mile-n">5</span><div>
+            <div class="mile-t">Frete grátis para sempre</div><div class="mile-d">Em qualquer pedido, sem mínimo</div></div></div>
+
+          <div class="mile locked"><span class="mile-n">10</span><div>
+            <div class="mile-t">Frasco cheio de 30ml</div><div class="mile-d">O mesmo que você já usa</div></div></div>
+
+          <div class="mile locked"><span class="mile-n">20</span><div>
+            <div class="mile-t">Lançamentos antes de todo mundo</div><div class="mile-d">Acesso permanente ao lote reservado</div></div></div>
+
+          <div class="mile locked"><span class="mile-n">30</span><div>
+            <div class="mile-t">Kit com seu nome gravado</div><div class="mile-d">Feito uma vez por ano, só para esta faixa</div></div></div>
+        </div>
+
+        <div class="card card--cream rv d5" style="margin-top:20px;">
+          <p class="label">Quem já entrou</p>
+          <div class="between" style="margin-top:10px;">
+            <div class="row">
+              <div class="reward-img" style="width:38px;height:38px;font-size:14px;font-weight:800;color:var(--blue-dp);">CM</div>
+              <div><div class="step-t" style="font-size:13.5px;">Carla M.</div><div class="fine">Comprou há 12 dias</div></div>
+            </div>
+            <span class="fine" style="font-weight:800;color:var(--blue);">+R$ 20</span>
+          </div>
+          <div class="between" style="margin-top:12px;">
+            <div class="row">
+              <div class="reward-img" style="width:38px;height:38px;font-size:14px;font-weight:800;color:var(--blue-dp);">JR</div>
+              <div><div class="step-t" style="font-size:13.5px;">Júlia R.</div><div class="fine">Comprou há 3 dias</div></div>
+            </div>
+            <span class="fine" style="font-weight:800;color:var(--stone-lt);">em 4 dias</span>
+          </div>
+        </div>
+        <div style="height:10px;"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 7 · CLUBE ══════════════ -->
+    <section class="screen" id="s-clube">
+      <header class="topbar">
+        <div class="between">
+          <div class="brand">O clube</div>
+          <span class="tier"><i></i>Membro</span>
+        </div>
+      </header>
+
+      <div class="pad" style="padding-top:22px;">
+
+        <div class="rv d1">
+          <p class="label">Missões</p>
+          <h2 style="margin-top:6px;">Pequenas coisas<br>que valem ponto.</h2>
+        </div>
+
+        <div class="card rv d2" style="margin-top:16px;">
+          <div class="mission done">
+            <span class="tick" style="background:var(--blue);border-color:var(--blue);">
+              <svg viewBox="0 0 12 12" style="opacity:1;transform:none;"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">Responder o quiz de pele</div><div class="step-d">Feito no primeiro dia</div></div>
+            <span class="mission-pts">+100</span>
+          </div>
+          <div class="mission done">
+            <span class="tick" style="background:var(--blue);border-color:var(--blue);">
+              <svg viewBox="0 0 12 12" style="opacity:1;transform:none;"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">Cadastrar o WhatsApp</div><div class="step-d">Para o aviso de reposição</div></div>
+            <span class="mission-pts">+50</span>
+          </div>
+          <div class="mission">
+            <span class="tick"></span>
+            <div><div class="step-t">Contar como está sendo</div><div class="step-d">Libera no dia 21, faltam 3 dias</div></div>
+            <span class="mission-pts">+100</span>
+          </div>
+          <div class="mission">
+            <span class="tick"></span>
+            <div><div class="step-t">Completar as três</div><div class="step-d">Bônus por fechar o conjunto</div></div>
+            <span class="mission-pts">+100</span>
+          </div>
+        </div>
+        <p class="fine rv d2" style="margin-top:9px;">
+          O ponto é por contar, não por elogiar. Avaliação ruim vale o mesmo.
+        </p>
+
+        <hr class="rule">
+
+        <div class="rv d3">
+          <p class="label">Resgatar</p>
+          <h2 style="margin-top:6px;">Você tem 420 pontos.</h2>
+        </div>
+
+        <div class="card rv d4" style="margin-top:16px;">
+          <div class="reward">
+            <div class="reward-img">🧴</div>
+            <div style="flex:1;"><div class="step-t">Miniatura de 10ml</div><div class="step-d">Disponível agora</div></div>
+            <button class="btn btn--solid btn--sm" data-toast="Geraria um cupom de resgate na Payt.">300 pts</button>
+          </div>
+          <div class="reward">
+            <div class="reward-img">✉️</div>
+            <div style="flex:1;"><div class="step-t">Carta da fundadora</div><div class="step-d">Escrita à mão, vai no próximo pedido</div></div>
+            <button class="btn btn--solid btn--sm" data-toast="Geraria um cupom de resgate na Payt.">400 pts</button>
+          </div>
+          <div class="reward locked">
+            <div class="reward-img">💧</div>
+            <div style="flex:1;"><div class="step-t">Frasco cheio de 30ml</div><div class="step-d">Faltam 380 pontos</div></div>
+            <button class="btn btn--ghost btn--sm" disabled>800 pts</button>
+          </div>
+          <div class="reward locked">
+            <div class="reward-img">🎟️</div>
+            <div style="flex:1;"><div class="step-t">Conversa com a dermatologista</div><div class="step-d">Faltam 780 pontos</div></div>
+            <button class="btn btn--ghost btn--sm" disabled>1200 pts</button>
+          </div>
+        </div>
+        <p class="fine rv d4" style="margin-top:9px;">
+          Seus pontos não expiram por tempo, e o que vale hoje vale amanhã.
+        </p>
+
+        <hr class="rule">
+
+        <div class="rv d5">
+          <p class="label">A escada</p>
+          <h2 style="margin-top:6px;">Ninguém se candidata.<br>Você sobe fazendo.</h2>
+        </div>
+
+        <div class="stack rv d6" style="margin-top:18px;">
+          <div class="lvl current">
+            <span class="tier"><i></i>Membro</span>
+            <h3 style="margin-top:11px;">Toda cliente entra aqui</h3>
+            <ul>
+              <li>Pontos em cada compra e em cada missão</li>
+              <li>R$ 20 para você e R$ 20 para quem você trouxer</li>
+              <li>A rotina, a sequência e as fotos de progresso</li>
+            </ul>
+          </div>
+
+          <div class="lvl">
+            <span class="tier tier--amb"><i></i>Embaixadora</span>
+            <h3 style="margin-top:11px;">Com 3 amigas ou 500 pontos</h3>
+            <ul>
+              <li>15% de comissão em crédito sobre o que vender</li>
+              <li>25% de desconto permanente para você</li>
+              <li>Página pessoal com a sua rotina e o seu rosto</li>
+              <li>Grupo fechado e lançamento antes de todo mundo</li>
+            </ul>
+          </div>
+
+          <div class="lvl">
+            <span class="tier tier--amb"><i></i>Parceira</span>
+            <h3 style="margin-top:11px;">Com R$ 2.500 vendidos no trimestre</h3>
+            <ul>
+              <li>De 20% a 30% em dinheiro, via Pix</li>
+              <li>Exige MEI ou CNPJ e nota, porque aqui vira renda</li>
+              <li>Voto na próxima fórmula e conversa direta com a marca</li>
+            </ul>
+          </div>
+
+          <div class="card card--cream" style="margin-top:4px;">
+            <p class="fine" style="line-height:1.55;">
+              <strong style="color:var(--ink);">A comissão é só sobre venda a quem usa.</strong>
+              Ninguém ganha por trazer outra embaixadora, e não existe kit, curso ou taxa
+              para entrar. Todo post de embaixadora leva a marcação de publicidade.
+            </p>
+          </div>
+        </div>
+        <div style="height:10px;"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 8 · PÁGINA PÚBLICA ══════════════ -->
+    <section class="screen" id="s-publica">
+      <div style="padding:16px 22px 0;">
+        <button class="btn btn--ghost btn--sm" data-go="indicar">← Voltar</button>
+      </div>
+
+      <div style="
+        margin-top:16px;padding:34px 24px 30px;text-align:center;
+        background:
+          radial-gradient(420px 260px at 50% 0%, #DCEBFA 0%, rgba(220,235,250,0) 70%),
+          linear-gradient(180deg,#FBFDFF, var(--cream));">
+        <div class="rv d1">
+          <div class="reward-img" style="width:76px;height:76px;margin:0 auto;font-size:26px;font-weight:800;color:var(--blue-dp);border-radius:50%;">AM</div>
+          <p class="label" style="margin-top:14px;">A rotina de</p>
+          <h1 style="margin-top:5px;font-size:33px;">Ana Martins</h1>
+          <p class="lede" style="margin-top:12px;max-width:280px;margin-left:auto;margin-right:auto;">
+            “Comecei pelas olheiras e fiquei pela firmeza. Levei quase dois meses
+            para ver de verdade, e valeu cada semana de espera.”
+          </p>
+          <p class="fine" style="margin-top:12px;">34 dias de uso · 4 registros de foto</p>
+        </div>
+      </div>
+
+      <div class="pad" style="padding-top:24px;">
+        <div class="rv d2">
+          <p class="label">O que ela usa</p>
+          <div class="card" style="margin-top:12px;">
+            <div class="reward">
+              <div class="reward-img" style="width:58px;height:58px;font-size:23px;">🧴</div>
+              <div style="flex:1;">
+                <div class="step-t">Sérum GHK-Cu 30ml</div>
+                <div class="step-d">Manhã e noite, 2 a 3 gotas</div>
+                <div style="font-family:var(--serif);font-size:19px;margin-top:5px;">R$ 147,90</div>
+              </div>
+            </div>
+            <div class="reward">
+              <div class="reward-img" style="width:58px;height:58px;font-size:23px;">📦</div>
+              <div style="flex:1;">
+                <div class="step-t">Kit compre 2, leve 3</div>
+                <div class="step-d">O que ela recomenda para dois meses e meio</div>
+                <div style="font-family:var(--serif);font-size:19px;margin-top:5px;">R$ 297,90
+                  <span class="fine" style="font-weight:700;">· R$ 99,30 por frasco</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rv d3" style="margin-top:18px;">
+          <button class="btn btn--blue" data-toast="Levaria ao checkout da Payt com o link da Ana rastreado.">
+            Quero essa rotina
+          </button>
+          <p class="fine" style="margin-top:10px;text-align:center;">
+            Você ganha R$ 20 na primeira compra. A Ana também.
+          </p>
+        </div>
+
+        <hr class="rule">
+
+        <div class="card card--ink rv d4">
+          <p class="label">Por que existe esta página</p>
+          <h3 style="margin-top:7px;color:var(--ivory);">Link, não cupom.</h3>
+          <p class="lede" style="margin-top:9px;">
+            Um código como “ANA10” vaza para sites de cupom em horas e passa a dar
+            desconto para quem já ia comprar. Um link pessoal não vaza, e a comissão
+            fica com quem realmente trouxe a cliente.
+          </p>
+        </div>
+
+        <p class="fine" style="margin-top:18px;text-align:center;padding-bottom:6px;">
+          Ana é embaixadora da Divessence e recebe comissão por esta página. #publi
+        </p>
+      </div>
+    </section>
+
+  </div><!-- /viewport -->
+
+  <!-- toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- navegação -->
+  <nav class="tabbar">
+    <button class="tab is-on" data-go="inicio">
+      <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.8V20h14V9.8"/></svg>Início</button>
+    <button class="tab" data-go="rotina">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>Rotina</button>
+    <button class="tab" data-go="progresso">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="12" cy="12.5" r="3.4"/><path d="M8.5 5l1.3-2h4.4l1.3 2"/></svg>Progresso</button>
+    <button class="tab" data-go="indicar">
+      <svg viewBox="0 0 24 24"><path d="M16 20v-1.6a3.4 3.4 0 0 0-3.4-3.4H6.4A3.4 3.4 0 0 0 3 18.4V20"/><circle cx="9.5" cy="8" r="3.4"/><path d="M18 8.5v5M20.5 11h-5"/></svg>Indicar</button>
+    <button class="tab" data-go="clube">
+      <svg viewBox="0 0 24 24"><path d="m12 3 2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.3l6-.8Z"/></svg>Clube</button>
+  </nav>
+
+</div><!-- /device -->
+</div><!-- /stage -->
+
+<script>
+(function(){
+  'use strict';
+
+  var viewport = document.getElementById('viewport');
+  var toastEl  = document.getElementById('toast');
+  var jump     = document.getElementById('jump');
+  var toastTimer;
+
+  /* ---------- navegação entre telas ---------- */
+  function go(name){
+    var target = document.getElementById('s-' + name);
+    if(!target) return;
+
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('is-active'); });
+    target.classList.add('is-active');
+
+    /* telas sem aba própria acendem a aba de onde se chega nelas */
+    var TAB_OF = { reposicao:'inicio', publica:'indicar', entrada:'inicio' };
+    var lit = TAB_OF[name] || name;
+    document.querySelectorAll('.tab').forEach(function(t){
+      t.classList.toggle('is-on', t.getAttribute('data-go') === lit);
+    });
+
+    if(jump.value !== name) jump.value = name;
+    viewport.scrollTop = 0;
+    if(window.scrollY) window.scrollTo(0, 0);
+    fillMeters(target);
+  }
+
+  /* ---------- barras de progresso animadas ---------- */
+  function fillMeters(scope){
+    scope.querySelectorAll('.meter i[data-fill]').forEach(function(bar){
+      bar.style.width = '0%';
+      requestAnimationFrame(function(){
+        setTimeout(function(){ bar.style.width = bar.getAttribute('data-fill') + '%'; }, 180);
+      });
+    });
+  }
+
+  /* ---------- aviso ---------- */
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 3200);
+  }
+
+  /* ---------- delegação de cliques ---------- */
+  document.addEventListener('click', function(e){
+    var goEl = e.target.closest('[data-go]');
+    if(goEl){ go(goEl.getAttribute('data-go')); return; }
+
+    var tEl = e.target.closest('[data-toast]');
+    if(tEl){ toast(tEl.getAttribute('data-toast')); return; }
+
+    var step = e.target.closest('.step');
+    if(step){ step.classList.toggle('done'); updateCounts(); return; }
+  });
+
+  /* ---------- contadores da rotina ---------- */
+  function updateCounts(){
+    document.querySelectorAll('#s-rotina .card').forEach(function(card){
+      var steps = card.querySelectorAll('.step');
+      if(!steps.length) return;
+      var done = card.querySelectorAll('.step.done').length;
+      var lbl  = card.querySelector('.label');
+      if(lbl) lbl.textContent = done + ' de ' + steps.length;
+    });
+  }
+
+  /* ---------- seletor do protótipo ---------- */
+  jump.addEventListener('change', function(){ go(jump.value); });
+
+  /* ---------- copiar link ---------- */
+  var copyBtn = document.getElementById('copyBtn');
+  if(copyBtn){
+    copyBtn.addEventListener('click', function(){
+      var txt = document.getElementById('reflink').textContent;
+      var done = function(){
+        copyBtn.textContent = 'Copiado';
+        copyBtn.classList.add('ok');
+        setTimeout(function(){ copyBtn.textContent = 'Copiar'; copyBtn.classList.remove('ok'); }, 1900);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done, done);
+      } else { done(); }
+    });
+  }
+
+  /* ---------- rostos de placeholder ---------- */
+  /* Silhueta abstrata. Marca lugar da foto real sem fingir ser um rosto:
+     o que muda entre os dias é a luminosidade e a uniformidade do tom. */
+  function face(tone, glow){
+    var id   = 'f' + tone + glow;
+    var lum  = 62 + glow * 4;          // pele mais luminosa com o tempo
+    var even = 0.16 - glow * 0.045;    // manchas somem aos poucos
+    var halo = 0.05 + glow * 0.07;
+
+    var svg =
+      '<svg viewBox="0 0 120 160" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">' +
+        '<defs>' +
+          '<linearGradient id="b' + id + '" x1="0" y1="0" x2="0" y2="1">' +
+            '<stop offset="0" stop-color="#F4F9FD"/><stop offset="1" stop-color="#D9E6F2"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="s' + id + '" x1=".25" y1="0" x2=".75" y2="1">' +
+            '<stop offset="0" stop-color="hsl(24,34%,' + (lum + 9) + '%)"/>' +
+            '<stop offset="1" stop-color="hsl(20,28%,' + (lum - 8) + '%)"/>' +
+          '</linearGradient>' +
+          '<radialGradient id="h' + id + '" cx="46%" cy="30%" r="52%">' +
+            '<stop offset="0" stop-color="#fff" stop-opacity="' + halo + '"/>' +
+            '<stop offset="1" stop-color="#fff" stop-opacity="0"/>' +
+          '</radialGradient>' +
+        '</defs>' +
+
+        '<rect width="120" height="160" fill="url(#b' + id + ')"/>' +
+
+        /* ombros */
+        '<path d="M6 160 C10 126 32 112 60 112 C88 112 110 126 114 160 Z" ' +
+              'fill="hsl(24,30%,' + (lum - 14) + '%)"/>' +
+        /* pescoço */
+        '<path d="M49 92 h22 v26 q-11 7 -22 0 Z" fill="hsl(22,28%,' + (lum - 10) + '%)"/>' +
+        /* cabeça de três quartos */
+        '<path d="M60 22 C80 22 90 40 89 60 C88 82 76 98 60 98 C44 98 32 82 31 60 C30 40 40 22 60 22 Z" ' +
+              'fill="url(#s' + id + ')"/>' +
+        /* cabelo */
+        '<path d="M60 18 C82 18 93 34 90 56 C88 44 80 38 70 36 C56 33 42 40 33 56 C29 34 40 18 60 18 Z" ' +
+              'fill="hsl(25,22%,' + (26 + glow) + '%)"/>' +
+        /* irregularidade de tom que diminui com o tempo */
+        '<ellipse cx="44" cy="70" rx="9" ry="6" fill="hsl(18,34%,48%)" opacity="' + even + '"/>' +
+        '<ellipse cx="76" cy="66" rx="7" ry="5" fill="hsl(18,34%,48%)" opacity="' + (even * 0.8) + '"/>' +
+        /* luz */
+        '<rect width="120" height="160" fill="url(#h' + id + ')"/>' +
+      '</svg>';
+
+    return 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '")';
+  }
+
+  var before = face(1, 0), after = face(1, 3);
+
+  var lb = document.getElementById('lyrBefore');
+  var la = document.getElementById('lyrAfter');
+  if(lb && la){
+    lb.style.cssText += 'background-image:' + before + ';background-size:cover;background-position:center;';
+    la.style.cssText += 'background-image:' + after  + ';background-size:cover;background-position:center;';
+  }
+
+  document.querySelectorAll('.shot[data-face]').forEach(function(el){
+    var d = parseInt(el.getAttribute('data-face'), 10);
+    var g = d === 0 ? 0 : (d === 14 ? 1 : 3);
+    el.style.cssText += 'background-image:' + face(1, g) + ';background-size:cover;background-position:center;';
+  });
+
+  /* ---------- comparador antes/depois ---------- */
+  var cmp = document.getElementById('cmp');
+  if(cmp){
+    var handle = document.getElementById('cmpHandle');
+    var dragging = false;
+
+    function setPos(clientX){
+      var r = cmp.getBoundingClientRect();
+      var pct = ((clientX - r.left) / r.width) * 100;
+      pct = Math.max(4, Math.min(96, pct));
+      la.style.clipPath = 'inset(0 0 0 ' + pct + '%)';
+      handle.style.left = pct + '%';
+    }
+
+    cmp.addEventListener('pointerdown', function(e){
+      dragging = true;
+      cmp.setPointerCapture(e.pointerId);
+      setPos(e.clientX);
+    });
+    cmp.addEventListener('pointermove', function(e){ if(dragging) setPos(e.clientX); });
+    cmp.addEventListener('pointerup',   function(){ dragging = false; });
+    cmp.addEventListener('pointercancel', function(){ dragging = false; });
+  }
+
+  /* ---------- estado inicial ---------- */
+  fillMeters(document.getElementById('s-inicio'));
+})();
+</script>
+</body>
+</html>
