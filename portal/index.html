@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#E1E9F1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Clube Divessence">
+<title>Clube Divessence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Tokens do site da marca. Claro dominante, escuro como acento raro. */
+:root{
+  --ink:#0B0D10; --ivory:#FFFFFF; --cream:#F2F7FB; --sand:#E1E9F1; --sand-line:#E0E8F0;
+  --blue:#0B7BD6; --blue-dp:#075CA3; --stone:#545E68; --stone-lt:#8A96A1;
+  --ok:#0F7B4F; --bad:#B3261E;
+  --radius:18px; --radius-sm:12px; --pill:100px;
+  --shadow-sm:0 1px 2px rgba(11,13,16,.04), 0 2px 8px rgba(11,13,16,.04);
+  --shadow-md:0 2px 4px rgba(11,13,16,.04), 0 12px 32px rgba(11,13,16,.07);
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Manrope', Helvetica, Arial, sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+html{-webkit-text-size-adjust:100%;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);}
+body{font-family:var(--sans);background:var(--sand);color:var(--ink);
+  line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+.stage{height:100%;display:flex;align-items:center;justify-content:center;}
+.device{width:100%;max-width:100%;height:100%;background:var(--ivory);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:900px){
+  .stage{padding:40px 20px;background:radial-gradient(1200px 600px at 50% -10%, #EDF4FA, var(--sand) 60%);}
+  .device{max-width:390px;height:844px;max-height:100%;border-radius:44px;
+    box-shadow:var(--shadow-md),0 0 0 10px #fff,0 0 0 11px var(--sand-line);}
+}
+.viewport{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.viewport::-webkit-scrollbar{width:0;}
+
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.01em;}
+h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-height:1.2;}
+.label{text-transform:uppercase;font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--stone-lt);}
+.lede{font-size:15px;color:var(--stone);line-height:1.55;}
+.fine{font-size:11.5px;line-height:1.45;color:var(--stone-lt);}
+.num{font-variant-numeric:tabular-nums;}
+.pad{padding:0 22px;}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.row{display:flex;align-items:center;gap:12px;}
+.rule{height:1px;background:var(--sand-line);border:0;margin:24px auto;width:72%;}
+
+.card{background:var(--ivory);border:1px solid var(--sand-line);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow-sm);}
+.card--cream{background:var(--cream);border-color:transparent;box-shadow:none;}
+.card--ink{background:var(--ink);color:var(--ivory);border-color:transparent;box-shadow:var(--shadow-md);}
+.card--ink .label{color:rgba(255,255,255,.52);} .card--ink .lede{color:rgba(255,255,255,.76);}
+.card--ink .fine{color:rgba(255,255,255,.45);}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  font-family:var(--sans);font-size:14.5px;font-weight:700;border-radius:var(--pill);
+  padding:15px 26px;border:1px solid transparent;cursor:pointer;
+  transition:transform .18s var(--ease),background .18s var(--ease);}
+.btn:active{transform:scale(.975);}
+.btn[disabled]{opacity:.45;cursor:not-allowed;}
+.btn--solid{background:var(--ink);color:var(--ivory);}
+.btn--blue{background:var(--blue);color:#fff;}
+.btn--blue:hover:not([disabled]){background:var(--blue-dp);}
+.btn--ghost{background:transparent;color:var(--ink);border-color:var(--sand-line);}
+.btn--light{background:var(--ivory);color:var(--ink);}
+.btn--sm{padding:10px 18px;font-size:13px;width:auto;}
+
+.input{width:100%;font-family:var(--sans);font-size:16px;padding:15px 18px;
+  border:1.5px solid var(--sand-line);border-radius:var(--radius-sm);background:var(--ivory);
+  color:var(--ink);outline:none;transition:border-color .2s;}
+.input:focus{border-color:var(--blue);}
+.input::placeholder{color:var(--stone-lt);}
+
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.88);
+  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--sand-line);padding:16px 22px 14px;}
+.brand{font-family:var(--serif);font-size:15px;letter-spacing:.22em;text-transform:uppercase;}
+.brand small{display:block;font-family:var(--sans);font-size:8.5px;letter-spacing:.3em;
+  color:var(--stone-lt);font-weight:700;margin-top:3px;}
+
+.tier{display:inline-flex;align-items:center;gap:7px;border-radius:var(--pill);
+  padding:6px 13px 6px 9px;background:var(--cream);font-size:11px;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--blue-dp);}
+.tier i{width:7px;height:7px;border-radius:50%;background:var(--blue);display:block;}
+
+.meter{height:7px;border-radius:var(--pill);background:var(--sand-line);overflow:hidden;}
+.meter i{display:block;height:100%;border-radius:var(--pill);width:0;
+  background:linear-gradient(90deg,var(--blue),#3FA0EC);transition:width 1s var(--ease);}
+.card--ink .meter{background:rgba(255,255,255,.16);}
+
+.balance{position:relative;overflow:hidden;border:1px solid var(--sand-line);
+  border-radius:var(--radius);padding:22px;
+  background:radial-gradient(420px 220px at 88% -30%, #DCEBFA, rgba(220,235,250,0) 62%),
+             linear-gradient(170deg,#FBFDFF,var(--cream));}
+.balance .figure{font-family:var(--serif);font-size:49px;line-height:1;letter-spacing:-.025em;}
+.balance .unit{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--stone-lt);margin-left:7px;}
+
+.vial{flex:none;display:block;width:34px;height:60px;border-radius:9px 9px 11px 11px;
+  border:1.5px solid rgba(255,255,255,.34);position:relative;background:rgba(255,255,255,.07);margin-top:9px;}
+.vial::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  width:15px;height:9px;border-radius:3px 3px 0 0;background:rgba(255,255,255,.34);}
+.vial i{position:absolute;left:0;right:0;bottom:0;height:var(--level,50%);
+  border-radius:0 0 10px 10px;background:linear-gradient(180deg,#5FB2F0,var(--blue));
+  transition:height 1s var(--ease);}
+
+.step{display:flex;gap:13px;align-items:flex-start;padding:14px 0;
+  border-bottom:1px solid var(--sand-line);cursor:pointer;user-select:none;}
+.step:last-child{border-bottom:0;}
+.tick{flex:none;width:23px;height:23px;border-radius:50%;border:1.5px solid var(--sand-line);
+  background:var(--ivory);display:grid;place-items:center;margin-top:1px;transition:all .22s var(--ease);}
+.tick svg{width:11px;height:11px;stroke:#fff;stroke-width:2.6;fill:none;stroke-linecap:round;
+  stroke-linejoin:round;opacity:0;transform:scale(.4);transition:all .22s var(--ease);}
+.step.done .tick{background:var(--blue);border-color:var(--blue);}
+.step.done .tick svg{opacity:1;transform:none;}
+.step.done .step-t{color:var(--stone-lt);text-decoration:line-through;}
+.step-t{font-size:14.5px;font-weight:600;} .step-d{font-size:12.5px;color:var(--stone-lt);margin-top:2px;}
+
+.streak{display:flex;gap:6px;}
+.streak span{flex:1;height:34px;border-radius:8px;background:var(--sand-line);display:grid;
+  place-items:center;font-size:10px;font-weight:800;color:var(--stone-lt);}
+.streak span.on{background:var(--blue);color:#fff;}
+.streak span.today{background:var(--ink);color:#fff;box-shadow:0 0 0 3px rgba(11,13,16,.08);}
+
+.mile{display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid var(--sand-line);}
+.mile:last-child{border-bottom:0;}
+.mile-n{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+  font-size:13px;font-weight:800;background:var(--cream);color:var(--stone-lt);border:1px solid var(--sand-line);}
+.mile.won .mile-n{background:var(--blue);color:#fff;border-color:var(--blue);}
+.mile.next .mile-n{background:var(--ink);color:#fff;border-color:var(--ink);}
+.mile.locked{opacity:.5;}
+.mile-t{font-size:14px;font-weight:700;} .mile-d{font-size:12px;color:var(--stone-lt);margin-top:1px;}
+.mile-badge{margin-left:auto;flex:none;font-size:9.5px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 9px;border-radius:var(--pill);}
+.mile.won .mile-badge{background:#E7F2FC;color:var(--blue-dp);}
+.mile.next .mile-badge{background:var(--ink);color:#fff;}
+
+.linkbox{display:flex;align-items:center;gap:10px;background:var(--cream);
+  border:1px dashed #C6D5E4;border-radius:var(--radius-sm);padding:13px 15px;}
+.linkbox code{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.copybtn{flex:none;border:0;background:var(--ink);color:#fff;border-radius:var(--pill);
+  font-family:var(--sans);font-size:11px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;padding:8px 13px;cursor:pointer;}
+.copybtn.ok{background:var(--blue);}
+
+.item{display:flex;gap:13px;align-items:center;padding:15px 0;border-bottom:1px solid var(--sand-line);}
+.item:last-child{border-bottom:0;}
+.item-pts{flex:none;margin-left:auto;font-size:12px;font-weight:800;color:var(--blue);white-space:nowrap;}
+.item.locked{opacity:.45;}
+.item-img{flex:none;width:52px;height:52px;border-radius:var(--radius-sm);
+  background:linear-gradient(150deg,#EAF3FB,#D6E7F6);display:grid;place-items:center;font-size:21px;}
+
+.tabbar{position:absolute;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);
+  background:rgba(255,255,255,.93);backdrop-filter:saturate(180%) blur(16px);
+  -webkit-backdrop-filter:saturate(180%) blur(16px);border-top:1px solid var(--sand-line);padding:9px 6px;}
+@media (min-width:900px){.device .tabbar{border-radius:0 0 44px 44px;}}
+.tab{border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;
+  gap:4px;padding:5px 2px;border-radius:12px;font-family:var(--sans);font-size:9.5px;
+  font-weight:700;color:var(--stone-lt);transition:color .2s;}
+.tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;}
+.tab.is-on{color:var(--ink);} .tab.is-on svg{stroke:var(--blue);}
+
+.screen{display:none;padding-bottom:104px;}
+.screen.is-active{display:block;animation:in .38s var(--ease) both;}
+@keyframes in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+.toast{position:absolute;left:22px;right:22px;bottom:96px;z-index:60;background:var(--ink);
+  color:#fff;border-radius:var(--radius-sm);padding:13px 16px;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow-md);opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:all .3s var(--ease);}
+.toast.show{opacity:1;transform:none;}
+.toast.bad{background:var(--bad);}
+
+.spin{width:22px;height:22px;border:2.5px solid var(--sand-line);border-top-color:var(--blue);
+  border-radius:50%;animation:sp .8s linear infinite;margin:0 auto;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="stage"><div class="device">
+  <div class="viewport" id="viewport">
+
+    <!-- ENTRAR -->
+    <section class="screen is-active" id="s-login">
+      <div style="min-height:80vh;display:flex;flex-direction:column;justify-content:center;
+                  padding:44px 30px;text-align:center;
+                  background:radial-gradient(520px 340px at 50% 14%, #DCEBFA, rgba(220,235,250,0) 66%),
+                             linear-gradient(180deg,#FBFDFF,var(--cream));">
+        <div class="brand" style="font-size:17px;">Divessence<small>Clube de quem cuida</small></div>
+
+        <h1 style="margin-top:34px;">Entre com o<br>seu e-mail.</h1>
+        <p class="lede" style="margin-top:14px;max-width:280px;margin-left:auto;margin-right:auto;">
+          O mesmo que você usou na compra. Mandamos um link, sem senha para inventar
+          nem lembrar.
+        </p>
+
+        <div id="loginForm" style="margin-top:28px;">
+          <input class="input" id="email" type="email" inputmode="email"
+                 autocomplete="email" placeholder="seu@email.com" aria-label="Seu e-mail">
+          <div style="margin-top:12px;">
+            <button class="btn btn--solid" id="btnEnviar">Receber meu link</button>
+          </div>
+        </div>
+
+        <div id="loginCode" style="margin-top:28px;display:none;">
+          <p class="lede" style="margin-bottom:14px;">
+            Enviado. Abra o link do e-mail, ou digite aqui o código de seis dígitos,
+            se ele tiver vindo.
+          </p>
+          <input class="input" id="code" type="text" inputmode="numeric" maxlength="6"
+                 placeholder="000000" style="text-align:center;letter-spacing:.4em;font-weight:700;"
+                 aria-label="Código de seis dígitos">
+          <div style="margin-top:12px;">
+            <button class="btn btn--blue" id="btnCodigo">Entrar com o código</button>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn btn--ghost btn--sm" id="btnVoltar">Usar outro e-mail</button>
+          </div>
+        </div>
+
+        <div id="loginBusy" style="margin-top:28px;display:none;"><div class="spin"></div></div>
+        <p class="fine" id="loginMsg" style="margin-top:16px;min-height:18px;"></p>
+      </div>
+    </section>
+
+    <!-- NAO E MEMBRO -->
+    <section class="screen" id="s-nao">
+      <div style="min-height:70vh;display:flex;flex-direction:column;justify-content:center;padding:44px 30px;text-align:center;">
+        <h1>Ainda não<br>encontramos você.</h1>
+        <p class="lede" style="margin-top:14px;">
+          O clube reconhece quem já comprou, pelo e-mail do pedido. Se você usou outro
+          endereço na compra, entre com ele.
+        </p>
+        <p class="fine" id="naoEmail" style="margin-top:12px;"></p>
+        <div style="margin-top:24px;">
+          <button class="btn btn--ghost" data-sair>Tentar outro e-mail</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INICIO -->
+    <section class="screen" id="s-inicio">
+      <header class="topbar"><div class="between">
+        <div class="brand">Divessence<small>Clube</small></div>
+        <span class="tier"><i></i><span id="hdTier">—</span></span>
+      </div></header>
+      <div class="pad" style="padding-top:22px;">
+        <p class="label" id="hdHoje">—</p>
+        <h1 style="margin-top:7px;">Olá, <span id="hdNome">—</span>.</h1>
+
+        <div class="balance" style="margin-top:20px;">
+          <p class="label">Seu saldo</p>
+          <div style="display:flex;align-items:baseline;margin-top:5px;">
+            <span class="figure num" id="sldPontos">—</span><span class="unit">pontos</span>
+          </div>
+          <p class="fine" id="sldReais" style="margin-top:6px;"></p>
+          <div style="margin-top:16px;">
+            <div class="between" style="margin-bottom:8px;">
+              <span class="fine" style="font-weight:700;color:var(--stone);" id="sldProx">—</span>
+              <span class="fine num" id="sldFrac"></span>
+            </div>
+            <div class="meter"><i id="sldBar"></i></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="between">
+            <div>
+              <p class="label">Agora</p>
+              <h3 style="margin-top:5px;">Sua rotina de hoje</h3>
+              <p class="fine" style="margin-top:4px;" id="rotResumoHome">—</p>
+            </div>
+            <div style="text-align:right;flex:none;">
+              <div style="font-family:var(--serif);font-size:30px;line-height:1;" id="strkNum">—</div>
+              <div class="fine" style="margin-top:2px;">dias seguidos</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;"><button class="btn btn--blue" data-ir="rotina">Marcar agora</button></div>
+        </div>
+
+        <div class="card card--ink" style="margin-top:14px;">
+          <div class="row" style="align-items:flex-start;">
+            <div style="flex:1;">
+              <p class="label">Seu frasco</p>
+              <h3 style="margin-top:7px;color:var(--ivory);" id="frTitulo">—</h3>
+              <p class="lede" style="margin-top:8px;" id="frSub">—</p>
+            </div>
+            <span class="vial" id="frVial" style="--level:50%;"><i></i></span>
+          </div>
+          <div style="margin-top:16px;">
+            <div class="between" style="margin-bottom:8px;">
+              <span class="fine" style="font-weight:700;color:rgba(255,255,255,.8);" id="frApp">—</span>
+              <span class="fine num" id="frPct"></span>
+            </div>
+            <div class="meter"><i id="frBar"></i></div>
+          </div>
+        </div>
+        <hr class="rule">
+        <p class="fine" style="text-align:center;padding-bottom:6px;">
+          <button class="copybtn" style="background:transparent;color:var(--stone-lt);padding:0;" data-sair>Sair</button>
+        </p>
+      </div>
+    </section>
+
+    <!-- ROTINA -->
+    <section class="screen" id="s-rotina">
+      <header class="topbar"><div class="between">
+        <div class="brand">Minha rotina</div>
+        <span class="tier"><i></i><span id="rotDia">—</span></span>
+      </div></header>
+      <div class="pad" style="padding-top:22px;">
+        <div class="card card--cream">
+          <div class="between">
+            <div><p class="label">Sequência</p>
+              <div style="font-family:var(--serif);font-size:31px;line-height:1.05;margin-top:3px;" id="strkNum2">—</div></div>
+            <p class="fine" style="text-align:right;">Marque manhã e noite.<br>O frasco conta sozinho.</p>
+          </div>
+          <div class="streak" id="strkBar" style="margin-top:15px;"></div>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="between" style="margin-bottom:4px;"><h3>Hoje</h3><span class="label" id="rotConta">—</span></div>
+          <div class="step" data-app="1">
+            <span class="tick"><svg viewBox="0 0 12 12"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">Manhã</div><div class="step-d">2 a 3 gotas, antes do protetor solar</div></div>
+          </div>
+          <div class="step" data-app="2">
+            <span class="tick"><svg viewBox="0 0 12 12"><polyline points="2,6.4 4.8,9 10,3"/></svg></span>
+            <div><div class="step-t">Noite</div><div class="step-d">2 a 3 gotas, antes do hidratante</div></div>
+          </div>
+        </div>
+        <p class="fine" style="margin-top:10px;">
+          O GHK-Cu age enquanto está sendo usado. Marcar é o que faz o clube saber
+          quando seu frasco vai acabar.
+        </p>
+      </div>
+    </section>
+
+    <!-- INDICAR -->
+    <section class="screen" id="s-indicar">
+      <header class="topbar"><div class="between">
+        <div class="brand">Indicar</div>
+        <span class="tier"><i></i><span id="indConta">—</span></span>
+      </div></header>
+      <div class="pad" style="padding-top:22px;">
+        <p class="label">Seu convite</p>
+        <h1 style="margin-top:7px;font-size:30px;" id="indTitulo">—</h1>
+        <p class="lede" style="margin-top:12px;">
+          O crédito cai quando o pedido dela passar dos sete dias de arrependimento.
+          É o que evita que você ganhe e depois perca.
+        </p>
+
+        <div class="linkbox" style="margin-top:18px;">
+          <code id="indLink">—</code>
+          <button class="copybtn" id="btnCopiar">Copiar</button>
+        </div>
+
+        <div style="margin-top:14px;">
+          <button class="btn btn--blue" id="btnZap">
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.8-.6-3.1-1.3-5.1-4.4-5.3-4.6-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.2c.1.2.1.4 0 .6l-.4.6-.3.3c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.7-.1l.9-1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4.1.1.1.6-.1 1.3Z"/></svg>
+          Chamar no WhatsApp</button>
+        </div>
+
+        <hr class="rule">
+        <div class="between" style="margin-bottom:10px;"><h3>Seus marcos</h3><span class="label" id="indMarcos">—</span></div>
+        <div id="listaMarcos"></div>
+      </div>
+    </section>
+
+    <!-- CLUBE -->
+    <section class="screen" id="s-clube">
+      <header class="topbar"><div class="between">
+        <div class="brand">O clube</div>
+        <span class="tier"><i></i><span id="clbTier">—</span></span>
+      </div></header>
+      <div class="pad" style="padding-top:22px;">
+        <p class="label">Missões</p>
+        <h2 style="margin-top:6px;">Pequenas coisas<br>que valem ponto.</h2>
+        <div class="card" style="margin-top:16px;" id="listaMissoes"></div>
+        <p class="fine" style="margin-top:9px;">
+          O ponto é por contar, não por elogiar. Avaliação ruim vale o mesmo.
+        </p>
+
+        <hr class="rule">
+        <p class="label">Resgatar</p>
+        <h2 style="margin-top:6px;">Você tem <span id="clbPontos">—</span> pontos.</h2>
+        <div class="card" style="margin-top:16px;" id="listaResgates"></div>
+        <p class="fine" style="margin-top:9px;">
+          Seus pontos não expiram por tempo, e o que vale hoje vale amanhã.
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <nav class="tabbar" id="tabbar" style="display:none;">
+    <button class="tab is-on" data-ir="inicio">
+      <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.8V20h14V9.8"/></svg>Início</button>
+    <button class="tab" data-ir="rotina">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>Rotina</button>
+    <button class="tab" data-ir="indicar">
+      <svg viewBox="0 0 24 24"><path d="M16 20v-1.6a3.4 3.4 0 0 0-3.4-3.4H6.4A3.4 3.4 0 0 0 3 18.4V20"/><circle cx="9.5" cy="8" r="3.4"/><path d="M18 8.5v5M20.5 11h-5"/></svg>Indicar</button>
+    <button class="tab" data-ir="clube">
+      <svg viewBox="0 0 24 24"><path d="m12 3 2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.3l6-.8Z"/></svg>Clube</button>
+  </nav>
+</div></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Ligação com o Supabase, sem biblioteca ---------- */
+var SB   = 'https://ldgsuzteerffzkengrfz.supabase.co';
+var KEY  = 'sb_publishable_A1pGIBebpj9aYTj6SSKL7w_FmHY3FHn';
+var SESS = 'clube_divessence_sessao';
+
+var sessao = null, dados = null;
+var vp = document.getElementById('viewport');
+var toastEl = document.getElementById('toast'), toastT;
+
+function guardar(s){ sessao = s; try{ localStorage.setItem(SESS, JSON.stringify(s)); }catch(e){} }
+function ler(){ try{ return JSON.parse(localStorage.getItem(SESS)||'null'); }catch(e){ return null; } }
+function limpar(){ sessao = null; try{ localStorage.removeItem(SESS); }catch(e){} }
+
+function api(caminho, opcoes){
+  opcoes = opcoes || {};
+  var h = { 'apikey': KEY, 'Content-Type': 'application/json' };
+  if (sessao && sessao.access_token) h['Authorization'] = 'Bearer ' + sessao.access_token;
+  if (opcoes.headers) for (var k in opcoes.headers) h[k] = opcoes.headers[k];
+  return fetch(SB + caminho, { method: opcoes.method || 'GET', headers: h, body: opcoes.body });
+}
+
+async function renovar(){
+  if (!sessao || !sessao.refresh_token) return false;
+  var r = await api('/auth/v1/token?grant_type=refresh_token', {
+    method:'POST', body: JSON.stringify({ refresh_token: sessao.refresh_token }) });
+  if (!r.ok) return false;
+  guardar(await r.json());
+  return true;
+}
+
+async function rpc(nome, args){
+  var chamar = function(){ return api('/rest/v1/rpc/' + nome, {
+    method:'POST', body: JSON.stringify(args || {}) }); };
+  var r = await chamar();
+  if (r.status === 401 && await renovar()) r = await chamar();
+  if (!r.ok) throw new Error('rpc ' + nome + ' ' + r.status);
+  return r.json();
+}
+
+/* ---------- Avisos ---------- */
+function aviso(msg, ruim){
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show' + (ruim ? ' bad' : '');
+  clearTimeout(toastT);
+  toastT = setTimeout(function(){ toastEl.className = 'toast'; }, 3400);
+}
+
+/* ---------- Navegação ---------- */
+function ir(nome){
+  var alvo = document.getElementById('s-' + nome);
+  if (!alvo) return;
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('is-active'); });
+  alvo.classList.add('is-active');
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.classList.toggle('is-on', t.getAttribute('data-ir') === nome); });
+  document.getElementById('tabbar').style.display =
+    (nome === 'login' || nome === 'nao') ? 'none' : 'grid';
+  vp.scrollTop = 0;
+}
+
+/* ---------- Entrar ---------- */
+var elEmail = document.getElementById('email');
+var elMsg   = document.getElementById('loginMsg');
+
+function ocupado(sim){
+  document.getElementById('loginBusy').style.display = sim ? 'block' : 'none';
+  document.getElementById('btnEnviar').disabled = sim;
+  document.getElementById('btnCodigo').disabled = sim;
+}
+
+document.getElementById('btnEnviar').addEventListener('click', async function(){
+  var email = (elEmail.value||'').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { elMsg.textContent = 'Confira o e-mail.'; return; }
+  ocupado(true); elMsg.textContent = '';
+  try{
+    var r = await api('/auth/v1/otp', { method:'POST',
+      body: JSON.stringify({ email: email, create_user: true,
+                             options: { email_redirect_to: location.origin + location.pathname } }) });
+    if (!r.ok) throw new Error(await r.text());
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('loginCode').style.display = 'block';
+    elMsg.textContent = 'Enviado para ' + email;
+  } catch(e){
+    elMsg.textContent = 'Não consegui enviar agora. Tente de novo em um minuto.';
+  } finally { ocupado(false); }
+});
+
+document.getElementById('btnCodigo').addEventListener('click', async function(){
+  var email = (elEmail.value||'').trim().toLowerCase();
+  var code  = (document.getElementById('code').value||'').trim();
+  if (code.length < 6) { elMsg.textContent = 'O código tem seis dígitos.'; return; }
+  ocupado(true); elMsg.textContent = '';
+  try{
+    var r = await api('/auth/v1/verify', { method:'POST',
+      body: JSON.stringify({ email: email, token: code, type: 'email' }) });
+    if (!r.ok) throw new Error(await r.text());
+    guardar(await r.json());
+    await carregar();
+  } catch(e){
+    elMsg.textContent = 'Código não confere ou já expirou.';
+  } finally { ocupado(false); }
+});
+
+document.getElementById('btnVoltar').addEventListener('click', function(){
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('loginCode').style.display = 'none';
+  elMsg.textContent = '';
+});
+
+/* ---------- Desenhar ---------- */
+function pintar(d){
+  dados = d;
+  var m = d.membro, p = d.pontos, n = d.nivel, ind = d.indicacoes, fr = d.frasco;
+
+  document.getElementById('hdNome').textContent  = m.primeiro_nome || 'você';
+  document.getElementById('hdTier').textContent  = n.titulo;
+  document.getElementById('clbTier').textContent = n.titulo;
+
+  var dias = m.desde ? Math.max(1, Math.round((Date.now() - new Date(m.desde)) / 86400000)) : 1;
+  document.getElementById('hdHoje').textContent = 'Dia ' + dias + ' do seu protocolo';
+  document.getElementById('rotDia').textContent = 'Dia ' + dias;
+
+  document.getElementById('sldPontos').textContent = p.saldo;
+  document.getElementById('sldReais').textContent  = 'Valem R$ ' + Number(p.valor_reais).toFixed(2).replace('.',',') + ' em produto';
+
+  if (n.proximo){
+    var faltaP = n.proximo.falta_pontos, faltaI = n.proximo.falta_indicacoes, partes = [];
+    if (faltaP > 0) partes.push(faltaP + ' pontos');
+    if (faltaI > 0) partes.push(faltaI + (faltaI === 1 ? ' amiga' : ' amigas'));
+    document.getElementById('sldProx').textContent =
+      partes.length ? 'Faltam ' + partes.join(' e ') + ' para ' + n.proximo.titulo
+                    : 'Você já pode ser ' + n.proximo.titulo;
+    var alvo = n.proximo.alvo_pontos || (faltaP + p.saldo) || 1;
+    document.getElementById('sldFrac').textContent = p.saldo + ' / ' + alvo;
+    document.getElementById('sldBar').style.width = Math.min(100, Math.round(p.saldo / alvo * 100)) + '%';
+  } else {
+    document.getElementById('sldProx').textContent = 'Você está no nível mais alto.';
+    document.getElementById('sldBar').style.width = '100%';
+  }
+
+  /* frasco */
+  var usadas = fr.aplicacoes_por_frasco - fr.restantes;
+  var pct = Math.round(usadas / fr.aplicacoes_por_frasco * 100);
+  document.getElementById('frTitulo').textContent = fr.dias_restantes <= 0
+      ? 'Acabou.' : 'Acaba em ' + fr.dias_restantes + (fr.dias_restantes === 1 ? ' dia.' : ' dias.');
+  document.getElementById('frSub').textContent =
+      'Contado pelas ' + fr.aplicacoes_feitas + ' aplicações que você marcou, não pelo calendário.';
+  document.getElementById('frApp').textContent = usadas + ' de ' + fr.aplicacoes_por_frasco + ' aplicações';
+  document.getElementById('frPct').textContent = pct + '%';
+  document.getElementById('frBar').style.width = pct + '%';
+  document.getElementById('frVial').style.setProperty('--level', (100 - pct) + '%');
+
+  /* indicar */
+  document.getElementById('indTitulo').innerHTML =
+    'Ela ganha R$ ' + Number(ind.credito_reais).toFixed(0) + '.<br>Você também.';
+  document.getElementById('indLink').textContent = ind.link;
+  document.getElementById('indConta').textContent =
+    ind.confirmadas + (ind.confirmadas === 1 ? ' amiga' : ' amigas');
+
+  var marcos = d.marcos || [];
+  var ganhos = marcos.filter(function(x){ return x.conquistado; }).length;
+  document.getElementById('indMarcos').textContent = ganhos + ' de ' + marcos.length;
+  document.getElementById('listaMarcos').innerHTML = marcos.map(function(x){
+    var estado = x.conquistado ? 'won' : (x.faixa > ind.confirmadas &&
+                 !marcos.some(function(y){ return !y.conquistado && y.faixa < x.faixa; }) ? 'next' : 'locked');
+    var selo = estado === 'won' ? '<span class="mile-badge">Conquistado</span>'
+             : estado === 'next' ? '<span class="mile-badge">Faltam ' + (x.faixa - ind.confirmadas) + '</span>' : '';
+    return '<div class="mile ' + estado + '"><span class="mile-n">' + x.faixa + '</span>' +
+           '<div><div class="mile-t">' + x.titulo + '</div>' +
+           '<div class="mile-d">' + (x.descricao||'') + '</div></div>' + selo + '</div>';
+  }).join('');
+
+  /* clube */
+  document.getElementById('clbPontos').textContent = p.saldo;
+  document.getElementById('listaMissoes').innerHTML = (d.missoes||[]).map(function(x){
+    return '<div class="item' + (x.feita ? ' locked' : '') + '" data-missao="' + x.chave + '">' +
+      '<span class="tick"' + (x.feita ? ' style="background:var(--blue);border-color:var(--blue)"' : '') + '>' +
+      '<svg viewBox="0 0 12 12"' + (x.feita ? ' style="opacity:1;transform:none"' : '') + '><polyline points="2,6.4 4.8,9 10,3"/></svg></span>' +
+      '<div><div class="step-t">' + x.titulo + '</div><div class="step-d">' + (x.descricao||'') + '</div></div>' +
+      '<span class="item-pts">+' + x.pontos + '</span></div>';
+  }).join('');
+
+  document.getElementById('listaResgates').innerHTML = (d.resgates||[]).map(function(x){
+    return '<div class="item' + (x.pode ? '' : ' locked') + '">' +
+      '<div class="item-img">' + (x.chave === 'carta' ? '✉️' : x.chave === 'consulta' ? '🎟️' : '🧴') + '</div>' +
+      '<div style="flex:1;"><div class="step-t">' + x.titulo + '</div>' +
+      '<div class="step-d">' + (x.descricao||'') + '</div></div>' +
+      '<button class="btn ' + (x.pode ? 'btn--solid' : 'btn--ghost') + ' btn--sm"' +
+      (x.pode ? ' data-resgate="' + x.chave + '"' : ' disabled') + '>' + x.pontos + ' pts</button></div>';
+  }).join('');
+}
+
+/* ---------- Rotina de hoje e sequência ---------- */
+var hojeApps = 0;
+
+function carregarRotina(){
+  var hoje = new Date().toISOString().slice(0,10);
+  var mapa = (dados && dados.rotina) || {};
+
+  hojeApps = mapa[hoje] || 0;
+  var passos = document.querySelectorAll('#s-rotina .step');
+  passos.forEach(function(p, i){ p.classList.toggle('done', hojeApps > i); });
+  document.getElementById('rotConta').textContent = hojeApps + ' de 2';
+  document.getElementById('rotResumoHome').textContent =
+    hojeApps >= 2 ? 'Feita, manhã e noite' : (hojeApps === 1 ? 'Falta uma' : 'Nenhuma ainda');
+
+  var letras = ['D','S','T','Q','Q','S','S'], html = '', seq = 0, quebrou = false;
+  for (var i = 6; i >= 0; i--){
+    var d = new Date(Date.now() - i*86400000), iso = d.toISOString().slice(0,10);
+    var feito = (mapa[iso] || 0) > 0, hj = (i === 0);
+    html += '<span class="' + (hj ? 'today' : (feito ? 'on' : '')) + '">' + letras[d.getDay()] + '</span>';
+    if (feito && !quebrou) seq++; else if (!hj) quebrou = true;
+  }
+  document.getElementById('strkBar').innerHTML = html;
+  document.getElementById('strkNum').textContent  = seq;
+  document.getElementById('strkNum2').textContent = seq + (seq === 1 ? ' dia' : ' dias');
+}
+
+/* ---------- Ações ---------- */
+document.addEventListener('click', async function(e){
+  var t = e.target.closest('[data-ir]');   if (t){ ir(t.getAttribute('data-ir')); return; }
+  if (e.target.closest('[data-sair]')){ limpar(); location.reload(); return; }
+
+  var passo = e.target.closest('#s-rotina .step');
+  if (passo){
+    var idx = parseInt(passo.getAttribute('data-app'), 10);
+    var novo = passo.classList.contains('done') ? idx - 1 : idx;
+    try{
+      await rpc('clube_marcar_rotina', { p_dia: new Date().toISOString().slice(0,10), p_aplicacoes: novo });
+      pintar(await rpc('clube_me'));
+      carregarRotina();
+      aviso(novo >= 2 ? 'Rotina de hoje completa.' : 'Marcado.');
+    } catch(err){ aviso('Não consegui salvar agora.', true); }
+    return;
+  }
+
+  var mis = e.target.closest('[data-missao]');
+  if (mis){
+    try{
+      var res = await rpc('clube_concluir_missao', { p_chave: mis.getAttribute('data-missao') });
+      if (res.erro === 'ainda_bloqueada') aviso('Essa missão ainda não liberou.', true);
+      else if (res.ja_tinha_feito)        aviso('Você já tinha feito essa.');
+      else                                aviso('Mais ' + res.pontos + ' pontos.');
+      pintar(await rpc('clube_me'));
+    } catch(err){ aviso('Não consegui concluir agora.', true); }
+    return;
+  }
+
+  var rg = e.target.closest('[data-resgate]');
+  if (rg){
+    try{
+      var r2 = await rpc('clube_resgatar', { p_chave: rg.getAttribute('data-resgate') });
+      if (r2.erro === 'saldo_insuficiente') aviso('Faltam ' + (r2.precisa - r2.saldo) + ' pontos.', true);
+      else aviso(r2.titulo + ' resgatado. Vai no próximo pedido.');
+      pintar(await rpc('clube_me'));
+    } catch(err){ aviso('Não consegui resgatar agora.', true); }
+    return;
+  }
+});
+
+document.getElementById('btnCopiar').addEventListener('click', function(){
+  var b = this, txt = document.getElementById('indLink').textContent;
+  var pronto = function(){ b.textContent = 'Copiado'; b.classList.add('ok');
+    setTimeout(function(){ b.textContent = 'Copiar'; b.classList.remove('ok'); }, 1800); };
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(pronto, pronto); else pronto();
+});
+
+document.getElementById('btnZap').addEventListener('click', function(){
+  if (!dados) return;
+  var msg = 'Oi! Faz um tempo que uso o sérum de GHK-Cu da Divessence e a diferença ' +
+            'apareceu mesmo. Se quiser experimentar, por este link você ganha R$ ' +
+            Number(dados.indicacoes.credito_reais).toFixed(0) + ' na primeira compra: https://' +
+            dados.indicacoes.link;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+});
+
+/* ---------- Início ---------- */
+async function carregar(){
+  try{
+    var d = await rpc('clube_me');
+    if (d && d.erro === 'nao_e_membro'){
+      document.getElementById('naoEmail').textContent = d.email || '';
+      ir('nao'); return;
+    }
+    if (!d || d.erro){ limpar(); ir('login'); return; }
+    pintar(d);
+    carregarRotina();
+    ir('inicio');
+  } catch(err){ limpar(); ir('login'); }
+}
+
+(async function iniciar(){
+  /* volta do link mágico: os tokens chegam no hash da URL */
+  if (location.hash && location.hash.indexOf('access_token') > -1){
+    var h = new URLSearchParams(location.hash.slice(1));
+    guardar({ access_token: h.get('access_token'), refresh_token: h.get('refresh_token') });
+    history.replaceState(null, '', location.pathname);
+  } else {
+    sessao = ler();
+  }
+  if (sessao && sessao.access_token) await carregar(); else ir('login');
+})();
+})();
+</script>
+</body>
+</html>
