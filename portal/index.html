@@ -509,31 +509,32 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
         </div>
 
         <div style="margin-top:16px;">
-          <button class="btn btn--blue" id="btnCompartilhar" style="display:none;">Compartilhar</button>
+          <button class="btn btn--blue" id="btnSalvar">1 · Salvar a imagem</button>
         </div>
-        <div style="margin-top:10px;">
-          <button class="btn btn--solid" id="btnSalvar">Salvar a imagem</button>
+        <p class="fine" id="dicaSalvar" style="margin-top:8px;text-align:center;">—</p>
+
+        <div style="margin-top:12px;">
+          <button class="btn btn--solid" id="btnAbrirInsta">2 · Abrir o Instagram</button>
         </div>
-        <div style="margin-top:10px;">
-          <button class="btn btn--ghost" id="btnAbrirInsta">Abrir o Instagram</button>
-        </div>
-        <p class="fine" style="margin-top:9px;text-align:center;">
-          A legenda é copiada sozinha nos três. É só colar.
+        <p class="fine" style="margin-top:8px;text-align:center;">
+          Lá dentro, escolha a imagem que você acabou de salvar e cole a legenda,
+          que já está copiada.
         </p>
+
+        <div style="margin-top:14px;">
+          <button class="btn btn--ghost" id="btnCompartilhar" style="display:none;">Compartilhar de outro jeito</button>
+        </div>
 
         <hr class="rule">
 
-        <p class="label">Como fazer, em três toques</p>
+        <p class="label">O caminho inteiro</p>
         <div style="margin-top:8px;">
-          <div class="passo"><b>1</b><div><strong>Salvar a imagem.</strong> Ela vai para as suas fotos.</div></div>
-          <div class="passo"><b>2</b><div><strong>Abrir o Instagram</strong> e escolher a imagem que acabou de salvar.</div></div>
-          <div class="passo"><b>3</b><div>Colar a legenda, que já está copiada. Ela marca a <span id="pmHandle">@divessencebeauty</span>.</div></div>
+          <div class="passo"><b>1</b><div><strong>Salvar a imagem</strong> no seu celular.</div></div>
+          <div class="passo"><b>2</b><div><strong>Abrir o Instagram</strong> e escolher essa imagem.</div></div>
+          <div class="passo"><b>3</b><div>Colar a legenda. Ela marca a <span id="pmHandle">@divessencebeauty</span>.</div></div>
           <div class="passo" id="passo3"><b>4</b><div>Nos stories, some a etiqueta de link com o seu endereço. É o que faz a indicação contar.</div></div>
         </div>
-        <p class="fine" style="margin-top:6px;">
-          No iPhone o Instagram não aceita imagem vinda direto do navegador. Por isso o
-          caminho certo é salvar primeiro.
-        </p>
+        <p class="fine" style="margin-top:6px;" id="notaPlataforma">—</p>
 
         <hr class="rule">
 
@@ -1454,44 +1455,92 @@ function baixarPeca(){
   setTimeout(function(){ URL.revokeObjectURL(u); }, 5000);
 }
 
-/* A bandeja do sistema so aparece onde ela realmente funciona. */
-(function(){
+/* O aparelho manda no texto, porque o caminho muda entre iPhone e Android. */
+var ehIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var ehCelular = ehIOS || /Android/i.test(navigator.userAgent);
+
+function podeBandeja(){
   try{
-    var teste = new File([new Blob(['x'],{type:'image/jpeg'})], 't.jpg', {type:'image/jpeg'});
-    if (navigator.canShare && navigator.canShare({ files:[teste] }))
-      document.getElementById('btnCompartilhar').style.display = 'inline-flex';
-  } catch(e){}
+    var f = new File([new Blob(['x'],{type:'image/jpeg'})], 't.jpg', {type:'image/jpeg'});
+    return !!(navigator.canShare && navigator.canShare({ files:[f] }));
+  } catch(e){ return false; }
+}
+
+(function(){
+  var dica = document.getElementById('dicaSalvar');
+  var nota = document.getElementById('notaPlataforma');
+
+  if (ehIOS){
+    dica.textContent = 'Vai abrir a lista do iPhone. Toque em "Salvar Imagem".';
+    nota.textContent = 'No iPhone o Instagram não aceita imagem vinda direto do navegador. ' +
+                       'Por isso ela precisa passar pelas suas Fotos primeiro. ' +
+                       'Se preferir, segure o dedo na imagem acima e escolha "Adicionar às Fotos".';
+  } else if (ehCelular){
+    dica.textContent = 'A imagem vai para a galeria do seu celular.';
+    nota.textContent = 'Se o Instagram aparecer na lista de compartilhar, pode ir direto por lá.';
+  } else {
+    dica.textContent = 'A imagem vai para os downloads deste computador.';
+    nota.textContent = 'Postar no Instagram é bem mais fácil pelo celular. ' +
+                       'Se puder, abra este endereço no telefone.';
+  }
+
+  if (podeBandeja())
+    document.getElementById('btnCompartilhar').style.display = 'inline-flex';
 })();
 
-document.getElementById('btnCompartilhar').addEventListener('click', async function(){
+function baixarPeca(){
+  if (!pecaBlob) return;
+  var u = URL.createObjectURL(pecaBlob);
+  var a = document.createElement('a');
+  a.href = u; a.download = 'divessence-' + formatoAtual + '.jpg';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(u); }, 5000);
+}
+
+/* Passo 1. No iPhone a unica forma de chegar nas Fotos e a lista do sistema. */
+document.getElementById('btnSalvar').addEventListener('click', async function(){
   if (!pecaBlob) return;
   copiarLegenda();
   var arquivo = new File([pecaBlob], 'divessence-' + formatoAtual + '.jpg', { type:'image/jpeg' });
-  try{
-    await navigator.share({ files:[arquivo] });
-    aviso('Legenda copiada. É só colar.');
-  } catch(e){
-    if (e && e.name === 'AbortError') return;
-    baixarPeca();
-    aviso('Imagem salva. Abra o Instagram e escolha ela.');
-  }
-});
 
-document.getElementById('btnSalvar').addEventListener('click', function(){
-  copiarLegenda();
+  if (podeBandeja()){
+    try{
+      await navigator.share({ files:[arquivo] });
+      aviso(ehIOS ? 'Se você salvou, agora é só abrir o Instagram.'
+                  : 'Pronto. Legenda copiada.');
+      return;
+    } catch(e){
+      if (e && e.name === 'AbortError') return;
+    }
+  }
+
   baixarPeca();
   aviso('Imagem salva e legenda copiada.');
 });
 
+/* Passo 2. Abre o aplicativo quando existe; cai no site quando nao. */
 document.getElementById('btnAbrirInsta').addEventListener('click', function(){
   copiarLegenda();
-  /* abre o aplicativo quando instalado; cai no site quando nao */
+  if (!ehCelular){
+    window.open('https://instagram.com/' + marca.instagram, '_blank', 'noopener');
+    return;
+  }
   var t = Date.now();
   window.location.href = 'instagram://camera';
   setTimeout(function(){
     if (Date.now() - t < 1600)
-      window.open('https://instagram.com/' + marca.instagram, '_blank', 'noopener');
-  }, 900);
+      window.location.href = 'https://instagram.com/' + marca.instagram;
+  }, 1000);
+});
+
+/* Alternativa, so onde a lista do sistema existe. */
+document.getElementById('btnCompartilhar').addEventListener('click', async function(){
+  if (!pecaBlob) return;
+  copiarLegenda();
+  var arquivo = new File([pecaBlob], 'divessence-' + formatoAtual + '.jpg', { type:'image/jpeg' });
+  try{ await navigator.share({ files:[arquivo] }); }
+  catch(e){ if (!(e && e.name === 'AbortError')) baixarPeca(); }
 });
 
 /* ---------- prova: o link do post ---------- */
