@@ -159,7 +159,7 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
 .item-img{flex:none;width:52px;height:52px;border-radius:var(--radius-sm);
   background:linear-gradient(150deg,#EAF3FB,#D6E7F6);display:grid;place-items:center;font-size:21px;}
 
-.tabbar{position:absolute;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);
+.tabbar{position:absolute;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);
   background:rgba(255,255,255,.93);backdrop-filter:saturate(180%) blur(16px);
   -webkit-backdrop-filter:saturate(180%) blur(16px);border-top:1px solid var(--sand-line);padding:9px 6px;}
 @media (min-width:900px){.device .tabbar{border-radius:0 0 44px 44px;}}
@@ -169,6 +169,44 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
 .tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;
   stroke-linecap:round;stroke-linejoin:round;}
 .tab.is-on{color:var(--ink);} .tab.is-on svg{stroke:var(--blue);}
+
+.shots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.shot{aspect-ratio:3/4;border-radius:var(--radius-sm);overflow:hidden;position:relative;
+  border:1px solid var(--sand-line);background:var(--cream);cursor:pointer;
+  background-size:cover;background-position:center;}
+.shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:5px 4px;font-size:9px;
+  font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-align:center;
+  background:linear-gradient(transparent,rgba(11,13,16,.62));}
+.shot.vazia{border-style:dashed;border-color:#CBD8E5;display:grid;place-items:center;}
+.shot.vazia span{font-size:9.5px;font-weight:800;color:var(--stone-lt);letter-spacing:.06em;
+  text-transform:uppercase;text-align:center;padding:0 3px;}
+.shot.agora{border-color:var(--blue);box-shadow:0 0 0 2px rgba(11,123,214,.18);}
+
+.compare{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:3/4;
+  border:1px solid var(--sand-line);cursor:ew-resize;touch-action:none;background:var(--cream);}
+.compare .cam{position:absolute;inset:0;background-size:cover;background-position:center;}
+.compare .cam--dir{clip-path:inset(0 0 0 50%);}
+.compare .hnd{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;
+  box-shadow:0 0 0 1px rgba(11,13,16,.14);transform:translateX(-1px);}
+.compare .grip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;
+  height:38px;border-radius:50%;background:#fff;box-shadow:var(--shadow-md);display:grid;
+  place-items:center;font-size:13px;font-weight:800;}
+.compare .tg{position:absolute;bottom:11px;font-size:10px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:#fff;background:rgba(11,13,16,.55);padding:5px 10px;
+  border-radius:var(--pill);}
+.compare .tg--e{left:11px;} .compare .tg--d{right:11px;}
+
+/* Camera com a foto anterior por baixo, para o rosto cair no mesmo lugar */
+.camwrap{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:3/4;
+  background:#0B0D10;}
+.camwrap video{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);}
+.camwrap .fantasma{position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:.38;pointer-events:none;transform:scaleX(-1);}
+.camwrap .guia{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
+  width:56%;aspect-ratio:3/4;border:1.5px dashed rgba(255,255,255,.55);border-radius:50%;
+  pointer-events:none;}
+.camwrap .dica{position:absolute;left:12px;right:12px;bottom:12px;text-align:center;
+  font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6);}
 
 .screen{display:none;padding-bottom:104px;}
 .screen.is-active{display:block;animation:in .38s var(--ease) both;}
@@ -347,6 +385,95 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
       </div>
     </section>
 
+    <!-- PROGRESSO -->
+    <section class="screen" id="s-progresso">
+      <header class="topbar"><div class="between">
+        <div class="brand">Progresso</div>
+        <span class="tier"><i></i><span id="fotConta">—</span></span>
+      </div></header>
+      <div class="pad" style="padding-top:22px;">
+
+        <div id="fotVazio" style="display:none;">
+          <p class="label">Comece hoje</p>
+          <h1 style="margin-top:7px;font-size:30px;">O espelho engana<br>quem se olha<br>todo dia.</h1>
+          <p class="lede" style="margin-top:12px;">
+            A mudança do GHK-Cu é lenta e contínua, e é por isso que ela some para você.
+            Quatro fotos, sempre do mesmo jeito, e ela reaparece.
+          </p>
+        </div>
+
+        <div id="fotCompara" style="display:none;">
+          <p class="label" id="fotRotulo">—</p>
+          <h1 style="margin-top:7px;font-size:30px;">O que o espelho<br>não te conta.</h1>
+          <div class="compare" id="cmp" style="margin-top:18px;">
+            <div class="cam" id="camE"></div>
+            <div class="cam cam--dir" id="camD"></div>
+            <div class="tg tg--e" id="tgE">—</div>
+            <div class="tg tg--d" id="tgD">—</div>
+            <div class="hnd" id="cmpH"><span class="grip">⇆</span></div>
+          </div>
+          <p class="fine" style="margin-top:10px;text-align:center;">Arraste para comparar.</p>
+        </div>
+
+        <div style="margin-top:22px;">
+          <div class="between" style="margin-bottom:12px;">
+            <h3>Sua linha do tempo</h3><span class="label" id="fotTotal">—</span>
+          </div>
+          <div class="shots" id="fotGrade"></div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <div class="between">
+            <div>
+              <p class="label">Próximo registro</p>
+              <h3 style="margin-top:5px;" id="fotProx">—</h3>
+              <p class="fine" style="margin-top:4px;" id="fotProxSub">—</p>
+            </div>
+            <div class="item-img" style="font-size:24px;">📷</div>
+          </div>
+          <div style="margin-top:14px;"><button class="btn btn--blue" id="btnFoto">Tirar a foto de hoje</button></div>
+        </div>
+
+        <div class="card card--ink" style="margin-top:14px;">
+          <p class="label">Onde a foto fica</p>
+          <h3 style="margin-top:7px;color:var(--ivory);">Ela não sai daqui.</h3>
+          <p class="lede" style="margin-top:9px;">
+            A imagem é guardada só neste aparelho e nunca é enviada para a gente. O clube
+            sabe apenas que você registrou o dia, nada mais. Se quiser, pode apagar
+            qualquer uma a qualquer momento.
+          </p>
+        </div>
+        <div style="height:10px;"></div>
+      </div>
+    </section>
+
+    <!-- CAMERA -->
+    <section class="screen" id="s-camera">
+      <header class="topbar"><div class="between">
+        <button class="copybtn" style="background:transparent;color:var(--ink);padding:0;" data-ir="progresso">← Voltar</button>
+        <span class="tier"><i></i><span id="camDia">—</span></span>
+      </div></header>
+      <div class="pad" style="padding-top:18px;">
+        <div class="camwrap">
+          <video id="cam" playsinline muted autoplay></video>
+          <div class="fantasma" id="camFantasma"></div>
+          <div class="guia"></div>
+          <div class="dica" id="camDica">Encaixe o rosto no oval</div>
+        </div>
+        <p class="fine" id="camAviso" style="margin-top:12px;text-align:center;">
+          Mesma luz, mesmo ângulo, mesma hora do dia. É isso que faz a comparação valer.
+        </p>
+        <div style="margin-top:14px;">
+          <button class="btn btn--blue" id="btnCapturar">Capturar</button>
+        </div>
+        <div style="margin-top:10px;">
+          <label class="btn btn--ghost" for="fotoArquivo" style="cursor:pointer;">Escolher da galeria</label>
+          <input id="fotoArquivo" type="file" accept="image/*" style="display:none;">
+        </div>
+        <canvas id="canvasFoto" style="display:none;"></canvas>
+      </div>
+    </section>
+
     <!-- INDICAR -->
     <section class="screen" id="s-indicar">
       <header class="topbar"><div class="between">
@@ -411,6 +538,8 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
       <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.8V20h14V9.8"/></svg>Início</button>
     <button class="tab" data-ir="rotina">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>Rotina</button>
+    <button class="tab" data-ir="progresso">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="12" cy="12.5" r="3.4"/><path d="M8.5 5l1.3-2h4.4l1.3 2"/></svg>Progresso</button>
     <button class="tab" data-ir="indicar">
       <svg viewBox="0 0 24 24"><path d="M16 20v-1.6a3.4 3.4 0 0 0-3.4-3.4H6.4A3.4 3.4 0 0 0 3 18.4V20"/><circle cx="9.5" cy="8" r="3.4"/><path d="M18 8.5v5M20.5 11h-5"/></svg>Indicar</button>
     <button class="tab" data-ir="clube">
@@ -651,7 +780,30 @@ function carregarRotina(){
 
 /* ---------- Ações ---------- */
 document.addEventListener('click', async function(e){
-  var t = e.target.closest('[data-ir]');   if (t){ ir(t.getAttribute('data-ir')); return; }
+  var t = e.target.closest('[data-ir]');
+  if (t){
+    var destino = t.getAttribute('data-ir');
+    if (destino !== 'camera') fecharCamera();
+    ir(destino);
+    if (destino === 'progresso') await pintarProgresso();
+    return;
+  }
+
+  var tirar = e.target.closest('[data-tirar]');
+  if (tirar){ abrirCamera(parseInt(tirar.getAttribute('data-tirar'), 10)); return; }
+
+  var ver = e.target.closest('[data-foto]');
+  if (ver){
+    var d0 = parseInt(ver.getAttribute('data-foto'), 10);
+    if (confirm('Apagar o registro do dia ' + d0 + '? A imagem sai deste aparelho.')){
+      await apagarFoto(d0);
+      try{ await rpc('clube_apagar_foto', { p_dia_numero: d0 }); } catch(err){}
+      dados = await rpc('clube_me');
+      await pintarProgresso();
+      aviso('Registro apagado.');
+    }
+    return;
+  }
   if (e.target.closest('[data-sair]')){
     try { await rpc('clube_sair', {}); } catch(err){}
     limpar(); location.reload(); return;
@@ -710,6 +862,237 @@ document.getElementById('btnZap').addEventListener('click', function(){
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
 });
 
+
+/* ============================================================
+   FOTOS — a imagem vive em IndexedDB, neste aparelho, e so aqui.
+   O servidor recebe apenas o numero do dia registrado.
+   ============================================================ */
+var DB_NOME = 'clube_divessence_fotos', DB_LOJA = 'fotos';
+var bancoFotos = null, urlsAbertas = [];
+
+function abrirBanco(){
+  return new Promise(function(ok, falha){
+    if (bancoFotos) return ok(bancoFotos);
+    var req = indexedDB.open(DB_NOME, 1);
+    req.onupgradeneeded = function(){
+      var d = req.result;
+      if (!d.objectStoreNames.contains(DB_LOJA)) d.createObjectStore(DB_LOJA);
+    };
+    req.onsuccess = function(){ bancoFotos = req.result; ok(bancoFotos); };
+    req.onerror = function(){ falha(req.error); };
+  });
+}
+
+async function salvarFoto(dia, blob){
+  var d = await abrirBanco();
+  return new Promise(function(ok, falha){
+    var t = d.transaction(DB_LOJA, 'readwrite');
+    t.objectStore(DB_LOJA).put(blob, chaveFoto(dia));
+    t.oncomplete = function(){ ok(true); };
+    t.onerror = function(){ falha(t.error); };
+  });
+}
+
+async function lerFoto(dia){
+  try{
+    var d = await abrirBanco();
+    return await new Promise(function(ok){
+      var r = d.transaction(DB_LOJA, 'readonly').objectStore(DB_LOJA).get(chaveFoto(dia));
+      r.onsuccess = function(){ ok(r.result || null); };
+      r.onerror   = function(){ ok(null); };
+    });
+  } catch(e){ return null; }
+}
+
+async function apagarFoto(dia){
+  var d = await abrirBanco();
+  return new Promise(function(ok){
+    var t = d.transaction(DB_LOJA, 'readwrite');
+    t.objectStore(DB_LOJA).delete(chaveFoto(dia));
+    t.oncomplete = function(){ ok(true); };
+    t.onerror = function(){ ok(false); };
+  });
+}
+
+/* A chave leva o id da membro: dois cadastros no mesmo aparelho nao se misturam. */
+function chaveFoto(dia){
+  return ((dados && dados.membro && dados.membro.id) || 'anon') + ':' + dia;
+}
+
+function soltarUrls(){
+  urlsAbertas.forEach(function(u){ try{ URL.revokeObjectURL(u); }catch(e){} });
+  urlsAbertas = [];
+}
+function urlDe(blob){ var u = URL.createObjectURL(blob); urlsAbertas.push(u); return u; }
+
+/* ---------- desenhar a tela de progresso ---------- */
+var MARCOS_FOTO = [0, 14, 30, 60];
+var diaAlvo = 0;
+
+function marcoDeHoje(dia){
+  /* o marco vigente e o maior ja alcancado */
+  var alvo = MARCOS_FOTO[0];
+  for (var i = 0; i < MARCOS_FOTO.length; i++) if (dia >= MARCOS_FOTO[i]) alvo = MARCOS_FOTO[i];
+  return alvo;
+}
+function proximoMarco(dia){
+  for (var i = 0; i < MARCOS_FOTO.length; i++) if (MARCOS_FOTO[i] > dia) return MARCOS_FOTO[i];
+  return null;
+}
+
+async function pintarProgresso(){
+  if (!dados) return;
+  soltarUrls();
+
+  var dia    = (dados.membro && dados.membro.dia) || 1;
+  var feitas = (dados.fotos && dados.fotos.feitas) || [];
+  var grade  = document.getElementById('fotGrade');
+  var atual  = marcoDeHoje(dia);
+
+  document.getElementById('fotConta').textContent =
+    feitas.length + (feitas.length === 1 ? ' registro' : ' registros');
+  document.getElementById('fotTotal').textContent = feitas.length + ' de ' + MARCOS_FOTO.length;
+
+  var blobs = {};
+  for (var i = 0; i < MARCOS_FOTO.length; i++){
+    var d = MARCOS_FOTO[i];
+    if (feitas.indexOf(d) > -1) blobs[d] = await lerFoto(d);
+  }
+
+  grade.innerHTML = MARCOS_FOTO.map(function(d){
+    var b = blobs[d];
+    if (b) return '<figure class="shot' + (d === atual ? ' agora' : '') + '" data-foto="' + d + '"' +
+                  ' style="background-image:url(' + urlDe(b) + ')">' +
+                  '<figcaption>Dia ' + d + '</figcaption></figure>';
+    return '<figure class="shot vazia' + (d === atual ? ' agora' : '') + '" data-tirar="' + d + '">' +
+           '<span>Dia ' + d + '</span></figure>';
+  }).join('');
+
+  /* comparacao entre a primeira e a mais recente que existirem */
+  var comFoto = MARCOS_FOTO.filter(function(d){ return !!blobs[d]; });
+  var temPar  = comFoto.length >= 2;
+
+  document.getElementById('fotVazio').style.display    = comFoto.length ? 'none' : 'block';
+  document.getElementById('fotCompara').style.display  = temPar ? 'block' : 'none';
+
+  if (temPar){
+    var a = comFoto[0], z = comFoto[comFoto.length - 1];
+    document.getElementById('camE').style.backgroundImage = 'url(' + urlDe(blobs[a]) + ')';
+    document.getElementById('camD').style.backgroundImage = 'url(' + urlDe(blobs[z]) + ')';
+    document.getElementById('tgE').textContent = 'Dia ' + a;
+    document.getElementById('tgD').textContent = 'Dia ' + z;
+    document.getElementById('fotRotulo').textContent = 'Dia ' + a + ' comparado com o dia ' + z;
+    document.getElementById('camD').style.clipPath = 'inset(0 0 0 50%)';
+    document.getElementById('cmpH').style.left = '50%';
+  }
+
+  var prox = proximoMarco(dia);
+  var faltaAtual = feitas.indexOf(atual) === -1;
+  if (faltaAtual){
+    document.getElementById('fotProx').textContent    = 'Hoje, dia ' + atual;
+    document.getElementById('fotProxSub').textContent = 'Este é o registro que está faltando.';
+    document.getElementById('btnFoto').textContent    = 'Tirar a foto do dia ' + atual;
+    diaAlvo = atual;
+  } else if (prox !== null){
+    document.getElementById('fotProx').textContent    = 'Em ' + (prox - dia) + ' dias';
+    document.getElementById('fotProxSub').textContent = 'A do dia ' + prox + ', quando a mudança já aparece.';
+    document.getElementById('btnFoto').textContent    = 'Refazer a foto do dia ' + atual;
+    diaAlvo = atual;
+  } else {
+    document.getElementById('fotProx').textContent    = 'Série completa';
+    document.getElementById('fotProxSub').textContent = 'Você registrou os quatro marcos.';
+    document.getElementById('btnFoto').textContent    = 'Refazer a foto do dia ' + atual;
+    diaAlvo = atual;
+  }
+}
+
+/* ---------- comparador ---------- */
+(function(){
+  var cmp = document.getElementById('cmp');
+  if (!cmp) return;
+  var arrastando = false;
+  function posicionar(x){
+    var r = cmp.getBoundingClientRect();
+    var pct = Math.max(4, Math.min(96, ((x - r.left) / r.width) * 100));
+    document.getElementById('camD').style.clipPath = 'inset(0 0 0 ' + pct + '%)';
+    document.getElementById('cmpH').style.left = pct + '%';
+  }
+  cmp.addEventListener('pointerdown', function(e){ arrastando = true; cmp.setPointerCapture(e.pointerId); posicionar(e.clientX); });
+  cmp.addEventListener('pointermove', function(e){ if (arrastando) posicionar(e.clientX); });
+  cmp.addEventListener('pointerup',   function(){ arrastando = false; });
+  cmp.addEventListener('pointercancel', function(){ arrastando = false; });
+})();
+
+/* ---------- camera ---------- */
+var fluxo = null;
+
+async function abrirCamera(dia){
+  diaAlvo = dia;
+  document.getElementById('camDia').textContent = 'Dia ' + dia;
+
+  /* a foto anterior entra por baixo, para o rosto cair no mesmo lugar */
+  var anterior = null;
+  for (var i = MARCOS_FOTO.indexOf(dia) - 1; i >= 0; i--){
+    anterior = await lerFoto(MARCOS_FOTO[i]);
+    if (anterior) break;
+  }
+  var f = document.getElementById('camFantasma');
+  f.style.backgroundImage = anterior ? 'url(' + urlDe(anterior) + ')' : 'none';
+  document.getElementById('camDica').textContent =
+    anterior ? 'Encaixe seu rosto sobre a foto anterior' : 'Encaixe o rosto no oval';
+
+  ir('camera');
+
+  try{
+    fluxo = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1440 } }, audio: false });
+    document.getElementById('cam').srcObject = fluxo;
+    document.getElementById('btnCapturar').disabled = false;
+  } catch(e){
+    document.getElementById('btnCapturar').disabled = true;
+    document.getElementById('camAviso').textContent =
+      'Não consegui abrir a câmera. Use a galeria abaixo.';
+  }
+}
+
+function fecharCamera(){
+  if (fluxo){ fluxo.getTracks().forEach(function(t){ t.stop(); }); fluxo = null; }
+  var v = document.getElementById('cam'); if (v) v.srcObject = null;
+}
+
+async function guardarERegistrar(blob, dia){
+  await salvarFoto(dia, blob);
+  try{ await rpc('clube_marcar_foto', { p_dia_numero: dia }); } catch(e){}
+  fecharCamera();
+  dados = await rpc('clube_me');
+  await pintarProgresso();
+  ir('progresso');
+  aviso('Registro do dia ' + dia + ' guardado neste aparelho.');
+}
+
+document.getElementById('btnCapturar').addEventListener('click', function(){
+  var v = document.getElementById('cam');
+  if (!v.videoWidth) return;
+  var c = document.getElementById('canvasFoto');
+  var lado = Math.min(v.videoWidth, Math.round(v.videoHeight * 3 / 4));
+  c.width = lado; c.height = Math.round(lado * 4 / 3);
+  var ctx = c.getContext('2d');
+  ctx.save(); ctx.translate(c.width, 0); ctx.scale(-1, 1);   /* desespelha */
+  ctx.drawImage(v,
+    (v.videoWidth - c.width) / 2, (v.videoHeight - c.height) / 2, c.width, c.height,
+    0, 0, c.width, c.height);
+  ctx.restore();
+  c.toBlob(function(b){ if (b) guardarERegistrar(b, diaAlvo); }, 'image/jpeg', 0.86);
+});
+
+document.getElementById('fotoArquivo').addEventListener('change', function(e){
+  var arq = e.target.files && e.target.files[0];
+  if (arq) guardarERegistrar(arq, diaAlvo);
+  e.target.value = '';
+});
+
+document.getElementById('btnFoto').addEventListener('click', function(){ abrirCamera(diaAlvo); });
+
 /* ---------- Início ---------- */
 async function carregar(){
   try{
@@ -721,6 +1104,7 @@ async function carregar(){
     if (!d || d.erro){ limpar(); ir('login'); return; }
     pintar(d);
     carregarRotina();
+    await pintarProgresso();
     ir('inicio');
   } catch(err){ limpar(); ir('login'); }
 }
