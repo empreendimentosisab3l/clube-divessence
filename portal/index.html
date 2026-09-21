@@ -225,6 +225,16 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
 .legenda{background:var(--cream);border:1px dashed #C6D5E4;border-radius:var(--radius-sm);
   padding:14px;font-size:12.5px;line-height:1.55;color:var(--stone);white-space:pre-wrap;}
 
+.selo{display:inline-flex;align-items:center;gap:6px;border-radius:var(--pill);
+  padding:5px 11px;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;}
+.selo--pend{background:#FBF3E2;color:#8A6318;}
+.selo--ok{background:#E7F2FC;color:var(--blue-dp);}
+.selo--nao{background:#FCEBEA;color:#8C2018;}
+.postlin{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid var(--sand-line);}
+.postlin:last-child{border-bottom:0;}
+.postlin a{font-size:12.5px;font-weight:700;color:var(--ink);text-decoration:none;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+
 .screen{display:none;padding-bottom:104px;}
 .screen.is-active{display:block;animation:in .38s var(--ease) both;}
 @keyframes in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
@@ -499,20 +509,57 @@ h1{font-size:33px;line-height:1.1;} h2{font-size:24px;} h3{font-size:19px;line-h
         </div>
 
         <div style="margin-top:16px;">
-          <button class="btn btn--blue" id="btnCompartilhar">Compartilhar no Instagram</button>
+          <button class="btn btn--blue" id="btnCompartilhar" style="display:none;">Compartilhar</button>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn--solid" id="btnSalvar">Salvar a imagem</button>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn--ghost" id="btnAbrirInsta">Abrir o Instagram</button>
         </div>
         <p class="fine" style="margin-top:9px;text-align:center;">
-          A legenda vai junto, copiada. É só colar.
+          A legenda é copiada sozinha nos três. É só colar.
         </p>
 
         <hr class="rule">
 
-        <p class="label">O que acontece quando você toca</p>
+        <p class="label">Como fazer, em três toques</p>
         <div style="margin-top:8px;">
-          <div class="passo"><b>1</b><div>Abre a lista de aplicativos do seu celular. Escolha o Instagram.</div></div>
-          <div class="passo"><b>2</b><div>Cole a legenda, que já está copiada. Ela marca a <span id="pmHandle">@divessencebeauty</span>.</div></div>
-          <div class="passo" id="passo3"><b>3</b><div>Nos stories, adicione a etiqueta de link com o seu endereço. É o que faz a indicação contar.</div></div>
+          <div class="passo"><b>1</b><div><strong>Salvar a imagem.</strong> Ela vai para as suas fotos.</div></div>
+          <div class="passo"><b>2</b><div><strong>Abrir o Instagram</strong> e escolher a imagem que acabou de salvar.</div></div>
+          <div class="passo"><b>3</b><div>Colar a legenda, que já está copiada. Ela marca a <span id="pmHandle">@divessencebeauty</span>.</div></div>
+          <div class="passo" id="passo3"><b>4</b><div>Nos stories, some a etiqueta de link com o seu endereço. É o que faz a indicação contar.</div></div>
         </div>
+        <p class="fine" style="margin-top:6px;">
+          No iPhone o Instagram não aceita imagem vinda direto do navegador. Por isso o
+          caminho certo é salvar primeiro.
+        </p>
+
+        <hr class="rule">
+
+        <p class="label">Depois de postar</p>
+        <h2 style="margin-top:6px;">Cole o link do post<br>e ganhe <span id="ppPontos">—</span> pontos.</h2>
+        <p class="lede" style="margin-top:10px;">
+          O ponto sai quando o post está no ar, não quando você toca aqui. A gente confere
+          se a marcação está lá e libera.
+        </p>
+
+        <div id="postForm" style="margin-top:16px;">
+          <input class="input" id="postUrl" type="url" inputmode="url"
+                 placeholder="cole aqui o link do seu post" aria-label="Link do post">
+          <div style="margin-top:10px;">
+            <button class="btn btn--solid" id="btnEnviarPost">Enviar para conferência</button>
+          </div>
+          <p class="fine" id="postMsg" style="margin-top:9px;min-height:16px;"></p>
+        </div>
+
+        <div id="postEspera" style="margin-top:12px;display:none;">
+          <div class="card card--cream">
+            <p class="fine" id="postEsperaTxt">—</p>
+          </div>
+        </div>
+
+        <div id="postLista" style="margin-top:14px;"></div>
 
         <hr class="rule">
 
@@ -878,7 +925,7 @@ document.addEventListener('click', async function(e){
     if (destino !== 'camera') fecharCamera();
     ir(destino);
     if (destino === 'progresso')    await pintarProgresso();
-    if (destino === 'compartilhar') await prepararPeca();
+    if (destino === 'compartilhar'){ await prepararPeca(); await carregarPosts(); }
     return;
   }
 
@@ -1381,45 +1428,113 @@ document.getElementById('btnLegenda').addEventListener('click', async function()
   setTimeout(function(){ b.textContent = 'Copiar'; b.classList.remove('ok'); }, 2000);
 });
 
-/* O compartilhamento precisa sair do toque dela: a peca ja esta pronta antes. */
-document.getElementById('btnCompartilhar').addEventListener('click', async function(){
+/* ============================================================
+   COMPARTILHAR — tres caminhos, porque o iPhone nao aceita imagem
+   vinda do navegador na bandeja do Instagram.
+   NENHUM deles da ponto. Ponto so com o post no ar.
+   ============================================================ */
+function baixarPeca(){
   if (!pecaBlob) return;
-  var arquivo = new File([pecaBlob], 'divessence-' + formatoAtual + '.jpg', { type:'image/jpeg' });
-
-  copiarLegenda();
-
-  try{
-    if (navigator.canShare && navigator.canShare({ files:[arquivo] })){
-      await navigator.share({ files:[arquivo] });
-      await premiarPrimeiroPost();
-      aviso('Legenda copiada. É só colar no Instagram.');
-      return;
-    }
-  } catch(e){
-    if (e && e.name === 'AbortError') return;   /* ela desistiu, tudo bem */
-  }
-
-  /* sem bandeja do sistema: baixa a imagem */
   var u = URL.createObjectURL(pecaBlob);
   var a = document.createElement('a');
-  a.href = u; a.download = arquivo.name; document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  setTimeout(function(){ URL.revokeObjectURL(u); }, 4000);
-  await premiarPrimeiroPost();
-  aviso('Imagem salva e legenda copiada. Abra o Instagram.');
+  a.href = u; a.download = 'divessence-' + formatoAtual + '.jpg';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(u); }, 5000);
+}
+
+/* A bandeja do sistema so aparece onde ela realmente funciona. */
+(function(){
+  try{
+    var teste = new File([new Blob(['x'],{type:'image/jpeg'})], 't.jpg', {type:'image/jpeg'});
+    if (navigator.canShare && navigator.canShare({ files:[teste] }))
+      document.getElementById('btnCompartilhar').style.display = 'inline-flex';
+  } catch(e){}
+})();
+
+document.getElementById('btnCompartilhar').addEventListener('click', async function(){
+  if (!pecaBlob) return;
+  copiarLegenda();
+  var arquivo = new File([pecaBlob], 'divessence-' + formatoAtual + '.jpg', { type:'image/jpeg' });
+  try{
+    await navigator.share({ files:[arquivo] });
+    aviso('Legenda copiada. É só colar.');
+  } catch(e){
+    if (e && e.name === 'AbortError') return;
+    baixarPeca();
+    aviso('Imagem salva. Abra o Instagram e escolha ela.');
+  }
 });
 
-/* Ponto so na primeira vez. Nunca por post, nunca por alcance. */
-async function premiarPrimeiroPost(){
-  try{
-    var r = await rpc('clube_concluir_missao', { p_chave:'instagram' });
-    if (r && r.ok && !r.ja_tinha_feito){
-      dados = await rpc('clube_me');
-      pintar(dados);
-      setTimeout(function(){ aviso('Mais ' + r.pontos + ' pontos por mostrar seu progresso.'); }, 3600);
-    }
-  } catch(e){}
+document.getElementById('btnSalvar').addEventListener('click', function(){
+  copiarLegenda();
+  baixarPeca();
+  aviso('Imagem salva e legenda copiada.');
+});
+
+document.getElementById('btnAbrirInsta').addEventListener('click', function(){
+  copiarLegenda();
+  /* abre o aplicativo quando instalado; cai no site quando nao */
+  var t = Date.now();
+  window.location.href = 'instagram://camera';
+  setTimeout(function(){
+    if (Date.now() - t < 1600)
+      window.open('https://instagram.com/' + marca.instagram, '_blank', 'noopener');
+  }, 900);
+});
+
+/* ---------- prova: o link do post ---------- */
+var meusPosts = null;
+
+async function carregarPosts(){
+  try{ meusPosts = await rpc('clube_meus_posts'); } catch(e){ return; }
+  if (!meusPosts || meusPosts.erro) return;
+
+  document.getElementById('ppPontos').textContent = meusPosts.pontos_por_post;
+
+  var pode = meusPosts.pode_enviar;
+  document.getElementById('postForm').style.display   = pode ? 'block' : 'none';
+  document.getElementById('postEspera').style.display = pode ? 'none'  : 'block';
+  if (!pode){
+    document.getElementById('postEsperaTxt').textContent =
+      'Você já tem um post nesta rodada. O próximo vale ponto em ' +
+      meusPosts.libera_em_dias + (meusPosts.libera_em_dias === 1 ? ' dia.' : ' dias.') +
+      ' É de propósito: o clube premia constância, não volume.';
+  }
+
+  document.getElementById('postLista').innerHTML = (meusPosts.lista || []).map(function(x){
+    var selo = x.status === 'aprovado' ? '<span class="selo selo--ok">Aprovado · +' + x.pontos + '</span>'
+             : x.status === 'recusado' ? '<span class="selo selo--nao">Não contou</span>'
+             : '<span class="selo selo--pend">Em conferência</span>';
+    return '<div class="postlin"><a href="' + x.url + '" target="_blank" rel="noopener">' +
+           x.url.replace(/^https?:\/\/(www\.)?/,'') + '</a>' + selo + '</div>';
+  }).join('');
 }
+
+document.getElementById('btnEnviarPost').addEventListener('click', async function(){
+  var campo = document.getElementById('postUrl');
+  var msg   = document.getElementById('postMsg');
+  var url   = (campo.value || '').trim();
+  if (!url){ msg.textContent = 'Cole o link do post.'; return; }
+
+  this.disabled = true; msg.textContent = '';
+  try{
+    var r = await rpc('clube_enviar_post', { p_url: url });
+    if (r && r.erro === 'link_invalido'){
+      msg.textContent = 'Esse link não é de um post ou reels do Instagram. Stories não dá para conferir.';
+    } else if (r && r.erro === 'post_ja_enviado'){
+      msg.textContent = 'Esse post já foi enviado.';
+    } else if (r && r.erro === 'ainda_no_intervalo'){
+      msg.textContent = 'O próximo post vale ponto em ' + r.libera_em_dias + ' dias.';
+    } else if (r && r.erro){
+      msg.textContent = 'Não consegui enviar agora.';
+    } else {
+      campo.value = '';
+      aviso('Enviado. Assim que confirmarmos, os pontos entram.');
+      await carregarPosts();
+    }
+  } catch(e){ msg.textContent = 'Não consegui enviar agora.'; }
+  finally { this.disabled = false; }
+});
 
 /* ---------- Início ---------- */
 async function carregar(){
